@@ -1,0 +1,25 @@
+body {
+    align-content:center;
+    align-items:space-around;
+    background-color:#24252A;
+    display:grid;
+    justify-items:center;
+}
+
+button {
+    background-color: #7851A9;
+    border: none;
+    cursor: pointer;
+    color: white;
+    padding: 12px 32px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    transition: 0.3s;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+button:hover{
+    background-color: #583189;
+
+}

@@ -5,8 +5,6 @@ const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&numbe
 
 $(document).ready(function () {
     $("#start").click(function () {
-        $("#start").hide();
-
         http.open("GET", url);
         http.send();
         http.onreadystatechange = (e) => {
