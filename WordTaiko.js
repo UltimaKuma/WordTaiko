@@ -31,6 +31,9 @@ $(document).keydown(function (event) {
     if (event.keyCode == 8) {
         wordsInput.pop();
         currentChar--;
+        if(currentChar<0){
+            currentChar=0
+        }
     } else if(event.key.length === 1) {
         wordsInput.push({
             key: event.key,
