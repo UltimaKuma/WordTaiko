@@ -21,5 +21,21 @@ button {
 
 button:hover{
     background-color: #583189;
+}
 
+input {
+    background-color: #44454A;
+    border: none;
+    cursor: pointer;
+    color: white;
+    padding: 12px 32px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    transition: 0.3s;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+input:focus{
+    outline: none;
 }
