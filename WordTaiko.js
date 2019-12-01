@@ -74,6 +74,8 @@ function drawWords() {
                 context.fillStyle = "gray";
             } else {
                 context.fillStyle = "#ff4c3b";
+                //draw strikethrough if character is incorrect
+                context.fillRect(83 - 27 * (wordsInput.length-i-1), 40, 27, 2)
             }
             context.font = "45px Courier New";
             context.fillText(wordsInput[i].key, 83 - 27 * (wordsInput.length-i-1), 50);
