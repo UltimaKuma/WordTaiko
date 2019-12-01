@@ -1,12 +1,23 @@
 const canvas = document.getElementById("wordTaiko");
 const context = canvas.getContext("2d");
 
-const wordCount = 20;
+
+const wordCount = 180;
 const apiKey = "P7AP6168";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number="+wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
 
+
+//basically init
+let currentChar = 0;
+let wordsInput = [];
+let wordsSpaced;
+let placeTimer = 5;
+canvas.width = window.innerWidth;
+let placeX = window.innerWidth/3;
+getWords();
+setInterval(placeCountdown, 100);
 
 //make actual API call one done
 function getWords(){
@@ -30,33 +41,33 @@ $(document).ready(function () {
 
 $(document).keydown(function (event) {
     //remove chars when delete pressed
+    //only play key audio if key is valid
     if (event.keyCode == 8) {
         wordsInput.pop();
         currentChar--;
         if(currentChar<0){
             currentChar=0
         }
+        playKeyHitAudio();
     } else if(event.key.length === 1) {
         wordsInput.push({
             key: event.key,
             correct: event.key==wordsSpaced.charAt(currentChar)
         });
         currentChar++;
+        playKeyHitAudio();
     }
     //reset char place timer
     placeTimer = 5;
-    playKeyHitAudio();
     drawWords();
 });
 
-//basically init
-let currentChar = 0;
-let wordsInput = [];
-let wordsSpaced;
-let placeTimer = 5;
-getWords();
-drawWords();
-setInterval(placeCountdown, 100);
+//on window resize, chnage widths and redraw words
+$(window).resize(function(event){
+    canvas.width = window.innerWidth;
+    placeX = window.innerWidth/3;
+    drawWords();
+});
 
 function playKeyHitAudio(){
     if (keyHitAudio.paused) {
@@ -69,12 +80,12 @@ function playKeyHitAudio(){
 function drawWords() {
     //fill over previous
     context.fillStyle = "#44454A"
-    context.fillRect(0, 0, 672, 100);
+    context.fillRect(0, 0, canvas.width, canvas.height);
 
     //draw chars not typed yet
     context.fillStyle = "white";
     context.font = "45px Courier New";
-    context.fillText(wordsSpaced.substring(currentChar, wordsSpaced.length), 110  , 50);
+    context.fillText(wordsSpaced.substring(currentChar, wordsSpaced.length), placeX+2  , 150);
 
     //draw chars typed
     if (wordsInput.length != 0) {
@@ -85,10 +96,10 @@ function drawWords() {
             } else {
                 context.fillStyle = "#ff4c3b";
                 //draw strikethrough if character is incorrect
-                context.fillRect(83 - 27 * (wordsInput.length-i-1), 40, 27, 2)
+                context.fillRect(placeX-25 - 27 * (wordsInput.length-i-1), 140, 27, 2)
             }
             context.font = "45px Courier New";
-            context.fillText(wordsInput[i].key, 83 - 27 * (wordsInput.length-i-1), 50);
+            context.fillText(wordsInput[i].key, placeX - 25 - 27 * (wordsInput.length-i-1), 150);
         }
     }
 
@@ -103,7 +114,7 @@ function drawPlace(isVisible){
     } else {
         context.fillStyle = "#44454A";
     }
-    context.fillRect(108, 15, 2, 45);
+    context.fillRect(placeX, 115, 2, 45);
 }
 
 function placeCountdown(){
