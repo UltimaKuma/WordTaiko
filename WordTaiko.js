@@ -16,6 +16,7 @@ let wordsSpaced;
 let placeTimer = 5;
 canvas.width = window.innerWidth;
 let placeX = window.innerWidth/3;
+let placeY = 100;
 let gameStart = false;
 let gameTimer = 60;
 let loopID;
@@ -112,7 +113,7 @@ function drawWords() {
     //draw chars not typed yet
     context.fillStyle = "white";
     context.font = "45px Courier New";
-    context.fillText(wordsSpaced.substring(currentChar, wordsSpaced.length), placeX+2  , 150);
+    context.fillText(wordsSpaced.substring(currentChar, wordsSpaced.length), placeX+2  , placeY+35);
 
     //draw chars typed
     if (wordsInput.length != 0) {
@@ -122,13 +123,12 @@ function drawWords() {
             } else {
                 context.fillStyle = "#ff4c3b";
                 //draw strikethrough if character is incorrect
-                context.fillRect(placeX-25 - 27 * (wordsInput.length-i-1), 140, 27, 2)
+                context.fillRect(placeX-25 - 27 * (wordsInput.length-i-1), placeY+25, 27, 2)
             }
             context.font = "45px Courier New";
-            context.fillText(wordsInput[i].key, placeX - 25 - 27 * (wordsInput.length-i-1), 150);
+            context.fillText(wordsInput[i].key, placeX - 25 - 27 * (wordsInput.length-i-1), placeY+35);
         }
     }
-
     //draw current place such that always shown when typing
     drawPlace(true);
 }
@@ -140,7 +140,7 @@ function drawPlace(isVisible){
     } else {
         context.fillStyle = "#44454A";
     }
-    context.fillRect(placeX, 115, 2, 45);
+    context.fillRect(placeX, placeY, 2, 45);
 }
 
 function placeCountdown(){
