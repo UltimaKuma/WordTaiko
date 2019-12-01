@@ -27,6 +27,7 @@ $(document).ready(function () {
 });
 
 $(document).keydown(function (event) {
+    //remove chars when delete pressed
     if (event.keyCode == 8) {
         wordsInput.pop();
         currentChar--;
@@ -40,7 +41,6 @@ $(document).keydown(function (event) {
         });
         currentChar++;
     }
-    typedFrame=true;
     //reset char place timer
     placeTimer = 5;
     drawWords();
