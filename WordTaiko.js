@@ -17,7 +17,6 @@ function getWords(){
     wordList = ["one", "two", "three"];
 
     wordsSpaced = wordList.join(" ");
-    console.log(wordList);
 }
 
 $(document).ready(function () {
@@ -42,6 +41,8 @@ $(document).keydown(function (event) {
         currentChar++;
     }
     typedFrame=true;
+    //reset char place timer
+    placeTimer = 5;
     drawWords();
 });
 
@@ -49,9 +50,11 @@ $(document).keydown(function (event) {
 let currentChar = 0;
 let wordsInput = [];
 let wordsSpaced;
-let typedFrame = false;
+let placeTimer = 5;
 getWords();
 drawWords();
+setInterval(placeCountdown, 100);
+
 
 function drawWords() {
     //fill over previous
@@ -75,5 +78,31 @@ function drawWords() {
             context.font = "45px Courier New";
             context.fillText(wordsInput[i].key, 83 - 27 * (wordsInput.length-i-1), 50);
         }
+    }
+
+    //draw current place such that always shown when typing
+    drawPlace(true);
+}
+
+function drawPlace(isVisible){
+    //draw depending on isVisible
+    if (isVisible) {
+        context.fillStyle = "white";
+    } else {
+        context.fillStyle = "#44454A";
+    }
+    context.fillRect(108, 15, 2, 45);
+}
+
+function placeCountdown(){
+    placeTimer--;
+    //should not show timer if under 0
+    if(placeTimer==0){
+        drawPlace(false);
+    }
+    //reset timer and draw if equal to -5
+    if(placeTimer==-5){
+        placeTimer=5;
+        drawPlace(true);
     }
 }
