@@ -46,7 +46,7 @@ $(document).keydown(function (event) {
     drawWords();
 });
 
-
+//basically init
 let currentChar = 0;
 let wordsInput = [];
 let wordsSpaced;
