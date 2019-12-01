@@ -41,6 +41,7 @@ $(document).keydown(function (event) {
         });
         currentChar++;
     }
+    typedFrame=true;
     drawWords();
 });
 
@@ -48,6 +49,7 @@ $(document).keydown(function (event) {
 let currentChar = 0;
 let wordsInput = [];
 let wordsSpaced;
+let typedFrame = false;
 getWords();
 drawWords();
 
@@ -56,18 +58,22 @@ function drawWords() {
     context.fillStyle = "#44454A"
     context.fillRect(0, 0, 672, 100);
 
+    //draw chars not typed yet
     context.fillStyle = "white";
     context.font = "45px Courier New";
-    context.fillText(wordsSpaced, 10  , 50);
+    context.fillText(wordsSpaced.substring(currentChar, wordsSpaced.length), 110  , 50);
 
-
-    for (let i = 0; i<wordsInput.length; i++) {
-        if (wordsInput[i].correct) {
-            context.fillStyle = "white";
-        }else{
-            context.fillStyle = "red";
+    //draw chars typed
+    if (wordsInput.length != 0) {
+        for (let i = wordsInput.length-1; i >= 0; i--) {
+            console.log(wordsInput[i]);
+            if (wordsInput[i].correct) {
+                context.fillStyle = "gray";
+            } else {
+                context.fillStyle = "#ff4c3b";
+            }
+            context.font = "45px Courier New";
+            context.fillText(wordsInput[i].key, 83 - 27 * (wordsInput.length-i-1), 50);
         }
-        context.font = "45px Courier New";
-        context.fillText(wordsInput[i].key, 10 + 27*i , 100);
     }
 }
