@@ -16,7 +16,12 @@ let wordsSpaced;
 let placeTimer = 5;
 canvas.width = window.innerWidth;
 let placeX = window.innerWidth/3;
+let gameStart = false;
+let gameTimer = 60;
+let loopID;
 getWords();
+drawWords();
+//start the blinking of the insert
 setInterval(placeCountdown, 100);
 
 //make actual API call one done
@@ -40,6 +45,8 @@ $(document).ready(function () {
 });
 
 $(document).keydown(function (event) {
+    //start the game if key pressed
+    toggleGameState(true);
     //remove chars when delete pressed
     //only play key audio if key is valid
     if (event.keyCode == 8) {
@@ -69,11 +76,31 @@ $(window).resize(function(event){
     drawWords();
 });
 
+function toggleGameState(start){
+    if(start && !gameStart){
+        gameStart = true;
+        gameTimer = 60;
+        loopID = setInterval(gameCountdown, 1000);
+    } else if(!start && gameStart){
+        console.log(loopID);
+        gameStart = false;
+        clearInterval(loopID);
+    }
+}
+
+function gameCountdown(){
+    gameTimer--;
+    console.log(gameTimer);
+    if(gameTimer<=0){
+        toggleGameState(false);
+    }
+}
+
 function playKeyHitAudio(){
     if (keyHitAudio.paused) {
         keyHitAudio.play();
     }else{
-        keyHitAudio.currentTime = 0
+        keyHitAudio.currentTime = 0;
     }
 }
 
@@ -90,7 +117,6 @@ function drawWords() {
     //draw chars typed
     if (wordsInput.length != 0) {
         for (let i = wordsInput.length-1; i >= 0; i--) {
-            console.log(wordsInput[i]);
             if (wordsInput[i].correct) {
                 context.fillStyle = "gray";
             } else {
