@@ -10,8 +10,8 @@ const keyHitAudio = new Audio("audio/KeyHit.wav");
 
 
 //basically init
-let currentChar = 0;
-let wordsInput = [];
+let currentChar;
+let wordsInput;
 let wordsSpaced;
 let placeTimer = 5;
 canvas.width = window.innerWidth;
@@ -20,10 +20,18 @@ let placeY = 100;
 let gameStart = false;
 let gameTimer = 60;
 let loopID;
-getWords();
-drawWords();
 //start the blinking of the insert
 setInterval(placeCountdown, 100);
+init();
+
+function init (){
+    currentChar = 0;
+    wordsInput = [];
+    wordsSpaced = "";
+    getWords();
+    drawWords();
+    toggleGameState(false)
+}
 
 //make actual API call one done
 function getWords(){
@@ -34,14 +42,17 @@ function getWords(){
     //     wordList = http.responseText;
     // }
     wordList = ["one", "two", "three"];
-
     wordsSpaced = wordList.join(" ");
 }
 
 $(document).ready(function () {
     $("#start").click(function () {
         currentChar = 0;
+        wordsInput = [];
+        wordsSpaced = "";
         getWords();
+        drawWords();
+        toggleGameState(false)
     });
 });
 
