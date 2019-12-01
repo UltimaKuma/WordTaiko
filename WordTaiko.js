@@ -5,8 +5,10 @@ const wordCount = 20;
 const apiKey = "P7AP6168";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number="+wordCount;
+const keyHitAudio = new Audio("audio/KeyHit.wav");
 
 
+//make actual API call one done
 function getWords(){
     let wordList;
     // http.open("GET", url);
@@ -43,6 +45,7 @@ $(document).keydown(function (event) {
     }
     //reset char place timer
     placeTimer = 5;
+    playKeyHitAudio();
     drawWords();
 });
 
@@ -55,6 +58,13 @@ getWords();
 drawWords();
 setInterval(placeCountdown, 100);
 
+function playKeyHitAudio(){
+    if (keyHitAudio.paused) {
+        keyHitAudio.play();
+    }else{
+        keyHitAudio.currentTime = 0
+    }
+}
 
 function drawWords() {
     //fill over previous
