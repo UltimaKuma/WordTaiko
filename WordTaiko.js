@@ -16,8 +16,8 @@ let wordsSpaced;
 let placeTimer = 5;
 canvas.width = window.innerWidth;
 let placeX = window.innerWidth/3;
-let placeY = 100;
-let gameStart = false;
+let placeY = 20;
+let gameState = false;
 let gameTimer = 60;
 let loopID;
 //start the blinking of the insert
@@ -30,7 +30,8 @@ function init (){
     wordsSpaced = "";
     getWords();
     drawWords();
-    toggleGameState(false)
+    resetGameTimer();
+    stopGame();
 }
 
 //make actual API call one done
@@ -46,19 +47,20 @@ function getWords(){
 }
 
 $(document).ready(function () {
-    $("#start").click(function () {
+    $("#restart").click(function () {
         currentChar = 0;
         wordsInput = [];
         wordsSpaced = "";
         getWords();
         drawWords();
-        toggleGameState(false)
+        resetGameTimer();
+        stopGame();
     });
 });
 
 $(document).keydown(function (event) {
     //start the game if key pressed
-    toggleGameState(true);
+    startGame();
     //remove chars when delete pressed
     //only play key audio if key is valid
     if (event.keyCode == 8) {
@@ -88,23 +90,30 @@ $(window).resize(function(event){
     drawWords();
 });
 
-function toggleGameState(start){
-    if(start && !gameStart){
-        gameStart = true;
-        gameTimer = 60;
-        loopID = setInterval(gameCountdown, 1000);
-    } else if(!start && gameStart){
-        console.log(loopID);
-        gameStart = false;
+function startGame(){
+    if(typeof loopID != 'undefined'){
         clearInterval(loopID);
     }
+    gameState = true;
+    //not needded but precautionary
+    resetGameTimer();
+    loopID = setInterval(gameCountdown, 1000);
+}
+
+function stopGame(){
+    gameState = false;
+    clearInterval(loopID);
+}
+
+function resetGameTimer(){
+    gameTimer = 60;
 }
 
 function gameCountdown(){
     gameTimer--;
     console.log(gameTimer);
     if(gameTimer<=0){
-        toggleGameState(false);
+        stopGame();
     }
 }
 
