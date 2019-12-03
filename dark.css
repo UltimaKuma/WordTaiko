@@ -3,7 +3,7 @@ body {
     align-items:space-around;
     background-color:#24252A;
     display:grid;
-    justify-items:center;
+    justify-items:stretch;
 }
 
 button {
@@ -16,9 +16,26 @@ button {
     display: inline-block;
     font-size: 16px;
     transition: 0.3s;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: "Calibri";
 }
 
 button:hover{
     background-color: #583189;
+}
+
+#stats{
+    height: 50px;
+    text-align: center;
+}
+
+.timer,
+.combo,
+.cpm,
+.wpm{
+    width: 25%;
+    text-align: center;
+    display: inline-block;
+    font-family: "Calibri";
+    color: white;
+    font-size: 24px;
 }
