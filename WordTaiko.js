@@ -93,9 +93,7 @@ function startGame(){
         clearInterval(loopID);
     }
     gameState = true;
-    //not needded but precautionary
-    resetGameTimer();
-    loopID = setInterval(gameCountdown, 1000);
+    loopID = setInterval(gameCountdown, 100);
 }
 
 function stopGame(){
@@ -105,10 +103,13 @@ function stopGame(){
 
 function resetGameTimer(){
     gameTimer = 60;
+    //reflect game timer (might need to change such that it reflects Date.now())
+    document.getElementsByClassName("timer")[0].innerHTML = "Timer<br>" + gameTimer;
 }
 
 function gameCountdown(){
     gameTimer--;
+    document.getElementsByClassName("timer")[0].innerHTML = "Timer\n" + gameTimer;
     console.log(gameTimer);
     if(gameTimer<=0){
         stopGame();
