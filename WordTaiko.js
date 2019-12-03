@@ -34,7 +34,7 @@ function init (){
     stopGame();
 }
 
-//make actual API call one done
+//make actual API call once done
 function getWords(){
     let wordList;
     // http.open("GET", url);
@@ -46,19 +46,17 @@ function getWords(){
     wordsSpaced = wordList.join(" ");
 }
 
-$(document).ready(function () {
-    $("#restart").click(function () {
-        currentChar = 0;
-        wordsInput = [];
-        wordsSpaced = "";
-        getWords();
-        drawWords();
-        resetGameTimer();
-        stopGame();
-    });
-});
+document.getElementById("restart").onclick = function () {
+    currentChar = 0;
+    wordsInput = [];
+    wordsSpaced = "";
+    getWords();
+    drawWords();
+    resetGameTimer();
+    stopGame();
+};
 
-$(document).keydown(function (event) {
+document.addEventListener("keydown",function (event) {
     //start the game if key pressed
     startGame();
     //remove chars when delete pressed
@@ -84,7 +82,7 @@ $(document).keydown(function (event) {
 });
 
 //on window resize, chnage widths and redraw words
-$(window).resize(function(event){
+window.addEventListener("resize", function(event){
     canvas.width = window.innerWidth;
     placeX = window.innerWidth/3;
     drawWords();
