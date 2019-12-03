@@ -141,7 +141,7 @@ function drawWords() {
             if (wordsInput[i].correct) {
                 context.fillStyle = "gray";
             } else {
-                context.fillStyle = "#ff4c3b";
+                context.fillStyle = "#d92929";
                 //draw strikethrough if character is incorrect
                 context.fillRect(placeX-25 - 27 * (wordsInput.length-i-1), placeY+25, 27, 2)
             }
