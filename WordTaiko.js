@@ -3,7 +3,7 @@ const context = canvas.getContext("2d");
 
 
 const wordCount = 180;
-const apiKey = "P7AP6168";
+const apiKey = "9R8JT5SO";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
@@ -44,17 +44,24 @@ function init() {
 
 //make actual API call once done
 function getWords() {
+
     let wordList;
-    // http.open("GET", url);
-    // http.send();
-    // http.onreadystatechange = (e) => {
-    //     wordList = http.responseText;
-    // }
-    wordList = ["one", "two", "three"];
-    wordsSpaced = wordList.join(" ");
+    http.onreadystatechange = (e) => {
+        if (http.readyState == 4 && http.status == 200) {
+            // get response and parse
+            wordList = JSON.parse(http.responseText);
+            wordsSpaced = wordList.join(" ");
+            //draw words once done
+            drawWords();
+        }
+    }
+    http.open("GET", url);
+    http.send();
+    // wordList = ["one", "two", "three"];
+    // wordsSpaced = wordList.join(" ");
 }
 
-document.getElementById("restart").onclick = init();
+document.getElementById("restart").onclick = init;
 
 document.addEventListener("keydown", function (event) {
     //start the game if key pressed
