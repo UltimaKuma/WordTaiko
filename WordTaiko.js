@@ -20,8 +20,10 @@ let placeY = 20;
 let gameState = false;
 let loopID;
 //init stat variables
-let charactersPerMin = 0;
 let gameTimer = 60;
+let combo = 0;
+let maxCombo = 0;
+let charactersPerMin = 0;
 //start the blinking of the insert
 setInterval(placeCountdown, 100);
 init();
@@ -58,9 +60,11 @@ document.addEventListener("keydown", function (event) {
     //delete pressed
     if (event.keyCode == 8) {
         //removes last char and checks if it is correct
-        if (wordsInput.pop().correct == true) {
+        if (wordsInput.length != 0 && wordsInput.pop().correct == true) {
             charactersPerMin--;
         }
+        //reset combo
+        combo=0;
         currentChar--;
         if (currentChar < 0) {
             currentChar = 0
@@ -76,9 +80,17 @@ document.addEventListener("keydown", function (event) {
         //increment CPM when correct char otherwise do nothing
         if (correctChar) {
             charactersPerMin++;
+            combo++;
+        }else{
+            combo=0;
         }
         currentChar++;
         playKeyHitAudio();
+    }
+
+    //check maxCombo
+    if(maxCombo<combo){
+        maxCombo = combo;
     }
     //reset char place timer
     placeTimer = 5;
@@ -114,11 +126,12 @@ function resetGameTimer() {
 
 function gameCountdown() {
     gameTimer--;
-    document.getElementsByClassName("timer")[0].innerHTML = "Timer<br>" + gameTimer;
-    console.log(gameTimer);
     if (gameTimer <= 0) {
+        gameTimer=0;
         stopGame();
     }
+    document.getElementsByClassName("timer")[0].innerHTML = "Timer<br>" + gameTimer;
+    console.log(gameTimer);
 }
 
 function playKeyHitAudio() {
@@ -182,6 +195,7 @@ function placeCountdown() {
 
 function drawStats() {
     //draw CPM
+    document.getElementsByClassName("combo")[0].innerHTML = "Combo<br>" + combo;
     document.getElementsByClassName("cpm")[0].innerHTML = "CPM<br>" + charactersPerMin;
-
+    document.getElementsByClassName("wpm")[0].innerHTML = "WPM<br>" + charactersPerMin;
 }
