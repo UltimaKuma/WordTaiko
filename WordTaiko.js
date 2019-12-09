@@ -3,7 +3,7 @@ const context = canvas.getContext("2d");
 
 
 const wordCount = 180;
-const apiKey = "FF7OC3QU";
+const apiKey = "U5Y6UMLG";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
@@ -154,8 +154,11 @@ function startGame() {
 }
 
 function stopGame() {
-    gameState = false;
-    clearInterval(loopID);
+    if(gameState){
+        gameState = false;
+        clearInterval(loopID);
+        alert("done");
+    }
 }
 
 function resetGameTimer() {
