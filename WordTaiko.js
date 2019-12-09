@@ -24,6 +24,7 @@ let gameTimer = 60;
 let combo = 0;
 let maxCombo = 0;
 let charactersPerMin = 0;
+let wordsPerMin = 0;
 //start the blinking of the insert
 setInterval(placeCountdown, 100);
 init();
@@ -33,6 +34,7 @@ function init() {
     wordsInput = [];
     wordsSpaced = "";
     charactersPerMin = 0;
+    wordsPerMin = 0;
     getWords();
     drawWords();
     resetGameTimer();
@@ -59,6 +61,21 @@ document.addEventListener("keydown", function (event) {
     startGame();
     //delete pressed
     if (event.keyCode == 8) {
+        //check word correctness for WPM
+        if(wordsSpaced.charAt(currentChar) == " "){
+            let i=1;
+            let wordCorrect = true;
+            while(currentChar-i>0 && wordsSpaced.charAt(currentChar-i) != " "){
+                if(wordsInput[currentChar-i].correct==false){
+                    wordCorrect=false;
+                    break;
+                }
+                i++;
+            }
+            if(wordCorrect){
+                wordsPerMin--;
+            }
+        }
         //removes last char and checks if it is correct
         if (wordsInput.length != 0 && wordsInput.pop().correct == true) {
             charactersPerMin--;
@@ -70,7 +87,7 @@ document.addEventListener("keydown", function (event) {
             currentChar = 0
         }
         playKeyHitAudio();
-        //printable char
+    //printable char
     } else if (event.key.length === 1) {
         let correctChar = (event.key == wordsSpaced.charAt(currentChar));
         wordsInput.push({
@@ -83,6 +100,21 @@ document.addEventListener("keydown", function (event) {
             combo++;
         }else{
             combo=0;
+        }
+        //check word correctness for WPM
+        if(wordsSpaced.charAt(currentChar+1) == " "){
+            let i=0;
+            let wordCorrect = true;
+            while(currentChar-i>0 && wordsSpaced.charAt(currentChar-i) != " "){
+                if(wordsInput[currentChar-i].correct==false){
+                    wordCorrect=false;
+                    break;
+                }
+                i++;
+            }
+            if(wordCorrect){
+                wordsPerMin++;
+            }
         }
         currentChar++;
         playKeyHitAudio();
@@ -197,5 +229,5 @@ function drawStats() {
     //draw CPM
     document.getElementsByClassName("combo")[0].innerHTML = "Combo<br>" + combo;
     document.getElementsByClassName("cpm")[0].innerHTML = "CPM<br>" + charactersPerMin;
-    document.getElementsByClassName("wpm")[0].innerHTML = "WPM<br>" + charactersPerMin;
+    document.getElementsByClassName("wpm")[0].innerHTML = "WPM<br>" + wordsPerMin;
 }
