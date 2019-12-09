@@ -3,7 +3,7 @@ const context = canvas.getContext("2d");
 
 
 const wordCount = 180;
-const apiKey = "9R8JT5SO";
+const apiKey = "FF7OC3QU";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
@@ -20,6 +20,7 @@ let placeY = 20;
 let gameState = false;
 let loopID;
 //init stat variables
+let gameStartTime = 0;
 let gameTimer = 60;
 let combo = 0;
 let maxCombo = 0;
@@ -44,7 +45,6 @@ function init() {
 
 //make actual API call once done
 function getWords() {
-
     let wordList;
     http.onreadystatechange = (e) => {
         if (http.readyState == 4 && http.status == 200) {
@@ -57,15 +57,15 @@ function getWords() {
     }
     http.open("GET", url);
     http.send();
-    // wordList = ["one", "two", "three"];
-    // wordsSpaced = wordList.join(" ");
 }
 
 document.getElementById("restart").onclick = init;
 
 document.addEventListener("keydown", function (event) {
-    //start the game if key pressed
-    startGame();
+    //start the game if key pressed and game hasnt started already
+    if(!gameState){
+        startGame();
+    }
     //delete pressed
     if (event.keyCode == 8) {
         //check word correctness for WPM
@@ -149,7 +149,8 @@ function startGame() {
         clearInterval(loopID);
     }
     gameState = true;
-    loopID = setInterval(gameCountdown, 100);
+    gameStartTime = Date.now();
+    loopID = setInterval(gameCountdown, 10);
 }
 
 function stopGame() {
@@ -164,13 +165,14 @@ function resetGameTimer() {
 }
 
 function gameCountdown() {
-    gameTimer--;
+    //calculate difference between game start and current
+    let delta = Date.now() - gameStartTime;
+    gameTimer = 60 - Math.floor(delta/1000);
     if (gameTimer <= 0) {
         gameTimer=0;
         stopGame();
     }
     document.getElementsByClassName("timer")[0].innerHTML = "Timer<br>" + gameTimer;
-    console.log(gameTimer);
 }
 
 function playKeyHitAudio() {
