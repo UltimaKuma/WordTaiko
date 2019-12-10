@@ -3,7 +3,7 @@ const context = canvas.getContext("2d");
 
 
 const wordCount = 180;
-const apiKey = "U5Y6UMLG";
+const apiKey = "N7FVX9PX";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
@@ -164,7 +164,7 @@ function stopGame() {
 function resetGameTimer() {
     gameTimer = 60;
     //reflect game timer (might need to change such that it reflects Date.now())
-    document.getElementsByClassName("timer")[0].innerHTML = "Timer<br>" + gameTimer;
+    document.getElementsByClassName("timer")[0].innerHTML = gameTimer;
 }
 
 function gameCountdown() {
@@ -175,7 +175,7 @@ function gameCountdown() {
         gameTimer=0;
         stopGame();
     }
-    document.getElementsByClassName("timer")[0].innerHTML = "Timer<br>" + gameTimer;
+    document.getElementsByClassName("timer")[0].innerHTML = gameTimer;
 }
 
 function playKeyHitAudio() {
@@ -239,7 +239,7 @@ function placeCountdown() {
 
 function drawStats() {
     //draw CPM
-    document.getElementsByClassName("combo")[0].innerHTML = "Combo<br>" + combo;
-    document.getElementsByClassName("cpm")[0].innerHTML = "CPM<br>" + charactersPerMin;
-    document.getElementsByClassName("wpm")[0].innerHTML = "WPM<br>" + wordsPerMin;
+    document.getElementsByClassName("combo")[0].innerHTML = combo;
+    document.getElementsByClassName("cpm")[0].innerHTML = charactersPerMin;
+    document.getElementsByClassName("wpm")[0].innerHTML = wordsPerMin;
 }

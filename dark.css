@@ -24,18 +24,24 @@ button:hover{
 }
 
 #stats{
-    height: 100px;
-    text-align: center;
-}
-
-.timer,
-.combo,
-.cpm,
-.wpm{
-    width: 25%;
+    /* height: 100px; */
     text-align: center;
     display: inline-block;
+}
+
+#stats div{
+    width: 24%;
+    text-align: center;
+    display: inline-block;
+    line-height: 30%;
     font-family: "Calibri";
     color: white;
+}
+
+#stats h3{
     font-size: 24px;
+}
+
+#stats p{
+    font-size: 18px;
 }
