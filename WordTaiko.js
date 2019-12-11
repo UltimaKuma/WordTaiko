@@ -145,14 +145,13 @@ class WordTaiko {
         }
         this.gameState = true;
         this.gameStartTime = Date.now();
-        console.log(this.gameStartTime);
         this.loopID = setInterval(this.gameCountdown.bind(this), 10);
     }
 
     stopGame() {
         this.gameState = false;
         clearInterval(this.loopID);
-        document.removeEventListener("keydown", checkKey.bind(this));
+        document.removeEventListener("keydown", this.checkKey.bind(this));
         alert("done");
     }
 
@@ -165,9 +164,10 @@ class WordTaiko {
         //calculate difference between game start and current
         let delta = Date.now() - this.gameStartTime;
         this.gameTimer = 60 - Math.floor(delta / 1000);
-        console.log(this.gameStartTime);
         if (this.gameTimer <= 0) {
             this.gameTimer = 0;
+            //want to show 0 before allowing alert
+            document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
             this.stopGame();
         }
         document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
