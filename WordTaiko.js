@@ -8,6 +8,15 @@ const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
 
+document.getElementById("restart").onclick = init;
+
+//on window resize, chnage widths and redraw words
+window.addEventListener("resize", function (event) {
+    canvas.width = window.innerWidth;
+    placeX = window.innerWidth / 3;
+    drawWords();
+});
+
 
 //basically init
 let currentChar;
@@ -30,6 +39,7 @@ let wordsPerMin = 0;
 setInterval(placeCountdown, 100);
 init();
 
+
 function init() {
     currentChar = 0;
     wordsInput = [];
@@ -39,29 +49,13 @@ function init() {
     getWords();
     drawWords();
     resetGameTimer();
-    stopGame();
     drawStats();
+    gameState = false;
+    clearInterval(loopID);
+    document.addEventListener("keydown", checkKey);
 }
 
-//make actual API call once done
-function getWords() {
-    let wordList;
-    http.onreadystatechange = (e) => {
-        if (http.readyState == 4 && http.status == 200) {
-            // get response and parse
-            wordList = JSON.parse(http.responseText);
-            wordsSpaced = wordList.join(" ");
-            //draw words once done
-            drawWords();
-        }
-    }
-    http.open("GET", url);
-    http.send();
-}
-
-document.getElementById("restart").onclick = init;
-
-document.addEventListener("keydown", function (event) {
+function checkKey(event) {
     //start the game if key pressed and game hasnt started already
     if(!gameState){
         startGame();
@@ -135,14 +129,28 @@ document.addEventListener("keydown", function (event) {
     placeTimer = 5;
     drawWords();
     drawStats();
-});
+}
 
-//on window resize, chnage widths and redraw words
-window.addEventListener("resize", function (event) {
-    canvas.width = window.innerWidth;
-    placeX = window.innerWidth / 3;
-    drawWords();
-});
+//make actual API call once done
+function getWords() {
+    let wordList;
+    http.onreadystatechange = (e) => {
+        if (http.readyState == 4 && http.status == 200) {
+            // get response and parse
+            wordList = JSON.parse(http.responseText);
+            wordsSpaced = wordList.join(" ");
+            //draw words once done
+            drawWords();
+        }
+    }
+    http.open("GET", url);
+    http.send();
+}
+
+
+
+
+
 
 function startGame() {
     if (typeof loopID != 'undefined') {
@@ -154,11 +162,10 @@ function startGame() {
 }
 
 function stopGame() {
-    if(gameState){
-        gameState = false;
-        clearInterval(loopID);
-        alert("done");
-    }
+    gameState = false;
+    clearInterval(loopID);
+    document.removeEventListener("keydown", checkKey);
+    alert("done");
 }
 
 function resetGameTimer() {
@@ -221,7 +228,8 @@ function drawPlace(isVisible) {
     } else {
         context.fillStyle = "#44454A";
     }
-    context.fillRect(placeX, placeY, 2, 45);
+    //need to floor x and y as otherwise place does not completely override itself
+    context.fillRect(Math.floor(placeX), Math.floor(placeY), 2, 45);
 }
 
 function placeCountdown() {
