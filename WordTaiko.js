@@ -1,253 +1,263 @@
+"use strict";
 const canvas = document.getElementById("wordTaiko");
 const context = canvas.getContext("2d");
+canvas.width = window.innerWidth;
 
 
 const wordCount = 180;
-const apiKey = "N7FVX9PX";
+const apiKey = "PGDDI4S4";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
 
-document.getElementById("restart").onclick = init;
+class WordTaiko {
+    constructor() {
+        this.currentChar = 0;
+        this.wordsInput = [];
+        this.wordsSpaced = "";
+        this.charactersPerMin = 0;
+        this.wordsPerMin = 0;
+        this.placeX = window.innerWidth / 3;
+        this.placeY = 20;
+        this.gameState = false;
+        this.placeTimer = 5;
+        this.loopID = -1;
 
-//on window resize, chnage widths and redraw words
-window.addEventListener("resize", function (event) {
-    canvas.width = window.innerWidth;
-    placeX = window.innerWidth / 3;
-    drawWords();
-});
+        //stats
+        this.gameStartTime = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.charactersPerMin = 0;
+        this.wordsPerMin = 0;
+
+        this.getWords();
+        this.drawWords();
+        this.resetGameTimer();
+        this.drawStats();
+        clearInterval(this.loopID);
+        document.addEventListener("keydown", this.checkKey.bind(this));
+
+        //start the blinking of the insert
+        setInterval(this.placeCountdown.bind(this), 100);
+
+    }
+
+    checkKey(event) {
+        //start the game if key pressed and game hasnt started already
+        if (!this.gameState) {
+            this.startGame();
+        }
+        //delete pressed
+        if (event.keyCode == 8) {
+            //check word correctness for WPM
+            if (this.wordsSpaced.charAt(this.currentChar) == " ") {
+                let i = 1;
+                let wordCorrect = true;
+                while (this.currentChar - i > 0 && this.wordsSpaced.charAt(this.currentChar - i) != " ") {
+                    if (this.wordsInput[this.currentChar - i].correct == false) {
+                        wordCorrect = false;
+                        break;
+                    }
+                    i++;
+                }
+                if (wordCorrect) {
+                    this.wordsPerMin--;
+                }
+            }
+            //removes last char and checks if it is correct
+            if (this.wordsInput.length != 0 && this.wordsInput.pop().correct == true) {
+                this.charactersPerMin--;
+            }
+            //reset combo
+            this.combo = 0;
+            this.currentChar--;
+            if (this.currentChar < 0) {
+                this.currentChar = 0
+            }
+            this.playKeyHitAudio();
+            //printable char
+        } else if (event.key.length === 1) {
+            let correctChar = (event.key == this.wordsSpaced.charAt(this.currentChar));
+            this.wordsInput.push({
+                key: event.key,
+                correct: correctChar
+            });
+            //increment CPM when correct char otherwise do nothing
+            if (correctChar) {
+                this.charactersPerMin++;
+                this.combo++;
+            } else {
+                this.combo = 0;
+            }
+            //check word correctness for WPM
+            if (this.wordsSpaced.charAt(this.currentChar + 1) == " ") {
+                let i = 0;
+                let wordCorrect = true;
+                while (this.currentChar - i > 0 && this.wordsSpaced.charAt(this.currentChar - i) != " ") {
+                    if (this.wordsInput[this.currentChar - i].correct == false) {
+                        wordCorrect = false;
+                        break;
+                    }
+                    i++;
+                }
+                if (wordCorrect) {
+                    this.wordsPerMin++;
+                }
+            }
+            this.currentChar++;
+            this.playKeyHitAudio();
+        }
+
+        //check maxCombo
+        if (this.maxCombo < this.combo) {
+            this.maxCombo = this.combo;
+        }
+        //reset char place timer
+        this.placeTimer = 5;
+        this.drawWords();
+        this.drawStats();
+    }
+
+    //make actual API call once done
+    getWords() {
+        let wordList;
+        http.onreadystatechange = function (event) {
+            if (http.readyState == 4 && http.status == 200) {
+                // get response and parse
+                wordList = JSON.parse(http.responseText);
+                this.wordsSpaced = wordList.join(" ");
+                //draw words once done
+                this.drawWords();
+            }
+        }.bind(this);
+        http.open("GET", url);
+        http.send();
+    }
 
 
-//basically init
-let currentChar;
-let wordsInput;
-let wordsSpaced;
-let placeTimer = 5;
-canvas.width = window.innerWidth;
-let placeX = window.innerWidth / 3;
-let placeY = 20;
-let gameState = false;
-let loopID;
-//init stat variables
-let gameStartTime = 0;
-let gameTimer = 60;
-let combo = 0;
-let maxCombo = 0;
-let charactersPerMin = 0;
-let wordsPerMin = 0;
-//start the blinking of the insert
-setInterval(placeCountdown, 100);
-init();
+
+
+
+
+    startGame() {
+        if (typeof this.loopID != 'undefined') {
+            clearInterval(this.loopID);
+        }
+        this.gameState = true;
+        this.gameStartTime = Date.now();
+        console.log(this.gameStartTime);
+        this.loopID = setInterval(this.gameCountdown.bind(this), 10);
+    }
+
+    stopGame() {
+        this.gameState = false;
+        clearInterval(this.loopID);
+        document.removeEventListener("keydown", checkKey.bind(this));
+        alert("done");
+    }
+
+    resetGameTimer() {
+        this.gameTimer = 60;
+        document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
+    }
+
+    gameCountdown() {
+        //calculate difference between game start and current
+        let delta = Date.now() - this.gameStartTime;
+        this.gameTimer = 60 - Math.floor(delta / 1000);
+        console.log(this.gameStartTime);
+        if (this.gameTimer <= 0) {
+            this.gameTimer = 0;
+            this.stopGame();
+        }
+        document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
+    }
+
+    playKeyHitAudio() {
+        if (keyHitAudio.paused) {
+            keyHitAudio.play();
+        } else {
+            keyHitAudio.currentTime = 0;
+        }
+    }
+
+    drawWords() {
+        //fill over previous
+        context.fillStyle = "#44454A"
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        //draw chars not typed yet
+        context.fillStyle = "white";
+        context.font = "45px Courier New";
+        context.fillText(this.wordsSpaced.substring(this.currentChar, this.wordsSpaced.length), this.placeX + 2, this.placeY + 35);
+
+        //draw chars typed
+        if (this.wordsInput.length != 0) {
+            for (let i = this.wordsInput.length - 1; i >= 0; i--) {
+                if (this.wordsInput[i].correct) {
+                    context.fillStyle = "gray";
+                } else {
+                    context.fillStyle = "#d92929";
+                    //draw strikethrough if character is incorrect
+                    context.fillRect(this.placeX - 25 - 27 * (this.wordsInput.length - i - 1), this.placeY + 25, 27, 2)
+                }
+                context.font = "45px Courier New";
+                context.fillText(this.wordsInput[i].key, this.placeX - 25 - 27 * (this.wordsInput.length - i - 1), this.placeY + 35);
+            }
+        }
+        //draw current place such that always shown when typing
+        this.drawPlace(true);
+    }
+
+    drawPlace(isVisible) {
+        //draw depending on isVisible
+        if (isVisible) {
+            context.fillStyle = "white";
+        } else {
+            context.fillStyle = "#44454A";
+        }
+        //need to floor x and y as otherwise place does not completely override itself
+        context.fillRect(Math.floor(this.placeX), Math.floor(this.placeY), 2, 45);
+    }
+
+    placeCountdown() {
+        this.placeTimer--;
+        //should not show timer if under 0
+        if (this.placeTimer == 0) {
+            this.drawPlace(false);
+        }
+        //reset timer and draw if equal to -5
+        if (this.placeTimer == -5) {
+            this.placeTimer = 5;
+            this.drawPlace(true);
+        }
+    }
+
+    drawStats() {
+        //draw CPM
+        document.getElementsByClassName("combo")[0].innerHTML = this.combo;
+        document.getElementsByClassName("cpm")[0].innerHTML = this.charactersPerMin;
+        document.getElementsByClassName("wpm")[0].innerHTML = this.wordsPerMin;
+    }
+
+}
 
 
 function init() {
-    currentChar = 0;
-    wordsInput = [];
-    wordsSpaced = "";
-    charactersPerMin = 0;
-    wordsPerMin = 0;
-    getWords();
-    drawWords();
-    resetGameTimer();
-    drawStats();
-    gameState = false;
-    clearInterval(loopID);
-    document.addEventListener("keydown", checkKey);
+    currentGame = new WordTaiko();
+
+    //on window resize, chnage widths and redraw words
+    window.addEventListener("resize", function (event) {
+        canvas.width = window.innerWidth;
+        this.placeX = window.innerWidth / 3;
+        this.drawWords();
+    }.bind(currentGame));
 }
 
-function checkKey(event) {
-    //start the game if key pressed and game hasnt started already
-    if(!gameState){
-        startGame();
-    }
-    //delete pressed
-    if (event.keyCode == 8) {
-        //check word correctness for WPM
-        if(wordsSpaced.charAt(currentChar) == " "){
-            let i=1;
-            let wordCorrect = true;
-            while(currentChar-i>0 && wordsSpaced.charAt(currentChar-i) != " "){
-                if(wordsInput[currentChar-i].correct==false){
-                    wordCorrect=false;
-                    break;
-                }
-                i++;
-            }
-            if(wordCorrect){
-                wordsPerMin--;
-            }
-        }
-        //removes last char and checks if it is correct
-        if (wordsInput.length != 0 && wordsInput.pop().correct == true) {
-            charactersPerMin--;
-        }
-        //reset combo
-        combo=0;
-        currentChar--;
-        if (currentChar < 0) {
-            currentChar = 0
-        }
-        playKeyHitAudio();
-    //printable char
-    } else if (event.key.length === 1) {
-        let correctChar = (event.key == wordsSpaced.charAt(currentChar));
-        wordsInput.push({
-            key: event.key,
-            correct: correctChar
-        });
-        //increment CPM when correct char otherwise do nothing
-        if (correctChar) {
-            charactersPerMin++;
-            combo++;
-        }else{
-            combo=0;
-        }
-        //check word correctness for WPM
-        if(wordsSpaced.charAt(currentChar+1) == " "){
-            let i=0;
-            let wordCorrect = true;
-            while(currentChar-i>0 && wordsSpaced.charAt(currentChar-i) != " "){
-                if(wordsInput[currentChar-i].correct==false){
-                    wordCorrect=false;
-                    break;
-                }
-                i++;
-            }
-            if(wordCorrect){
-                wordsPerMin++;
-            }
-        }
-        currentChar++;
-        playKeyHitAudio();
-    }
+var currentGame;
 
-    //check maxCombo
-    if(maxCombo<combo){
-        maxCombo = combo;
-    }
-    //reset char place timer
-    placeTimer = 5;
-    drawWords();
-    drawStats();
-}
+init();
 
-//make actual API call once done
-function getWords() {
-    let wordList;
-    http.onreadystatechange = (e) => {
-        if (http.readyState == 4 && http.status == 200) {
-            // get response and parse
-            wordList = JSON.parse(http.responseText);
-            wordsSpaced = wordList.join(" ");
-            //draw words once done
-            drawWords();
-        }
-    }
-    http.open("GET", url);
-    http.send();
-}
+document.getElementById("restart").onclick = init.bind(currentGame);
 
 
-
-
-
-
-function startGame() {
-    if (typeof loopID != 'undefined') {
-        clearInterval(loopID);
-    }
-    gameState = true;
-    gameStartTime = Date.now();
-    loopID = setInterval(gameCountdown, 10);
-}
-
-function stopGame() {
-    gameState = false;
-    clearInterval(loopID);
-    document.removeEventListener("keydown", checkKey);
-    alert("done");
-}
-
-function resetGameTimer() {
-    gameTimer = 60;
-    //reflect game timer (might need to change such that it reflects Date.now())
-    document.getElementsByClassName("timer")[0].innerHTML = gameTimer;
-}
-
-function gameCountdown() {
-    //calculate difference between game start and current
-    let delta = Date.now() - gameStartTime;
-    gameTimer = 60 - Math.floor(delta/1000);
-    if (gameTimer <= 0) {
-        gameTimer=0;
-        stopGame();
-    }
-    document.getElementsByClassName("timer")[0].innerHTML = gameTimer;
-}
-
-function playKeyHitAudio() {
-    if (keyHitAudio.paused) {
-        keyHitAudio.play();
-    } else {
-        keyHitAudio.currentTime = 0;
-    }
-}
-
-function drawWords() {
-    //fill over previous
-    context.fillStyle = "#44454A"
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    //draw chars not typed yet
-    context.fillStyle = "white";
-    context.font = "45px Courier New";
-    context.fillText(wordsSpaced.substring(currentChar, wordsSpaced.length), placeX + 2, placeY + 35);
-
-    //draw chars typed
-    if (wordsInput.length != 0) {
-        for (let i = wordsInput.length - 1; i >= 0; i--) {
-            if (wordsInput[i].correct) {
-                context.fillStyle = "gray";
-            } else {
-                context.fillStyle = "#d92929";
-                //draw strikethrough if character is incorrect
-                context.fillRect(placeX - 25 - 27 * (wordsInput.length - i - 1), placeY + 25, 27, 2)
-            }
-            context.font = "45px Courier New";
-            context.fillText(wordsInput[i].key, placeX - 25 - 27 * (wordsInput.length - i - 1), placeY + 35);
-        }
-    }
-    //draw current place such that always shown when typing
-    drawPlace(true);
-}
-
-function drawPlace(isVisible) {
-    //draw depending on isVisible
-    if (isVisible) {
-        context.fillStyle = "white";
-    } else {
-        context.fillStyle = "#44454A";
-    }
-    //need to floor x and y as otherwise place does not completely override itself
-    context.fillRect(Math.floor(placeX), Math.floor(placeY), 2, 45);
-}
-
-function placeCountdown() {
-    placeTimer--;
-    //should not show timer if under 0
-    if (placeTimer == 0) {
-        drawPlace(false);
-    }
-    //reset timer and draw if equal to -5
-    if (placeTimer == -5) {
-        placeTimer = 5;
-        drawPlace(true);
-    }
-}
-
-function drawStats() {
-    //draw CPM
-    document.getElementsByClassName("combo")[0].innerHTML = combo;
-    document.getElementsByClassName("cpm")[0].innerHTML = charactersPerMin;
-    document.getElementsByClassName("wpm")[0].innerHTML = wordsPerMin;
-}
