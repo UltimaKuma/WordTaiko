@@ -23,6 +23,10 @@ class WordTaiko {
         this.placeTimer = 5;
         this.loopID = -1;
 
+        //making checkKey.bind(this) a variable as needs to access
+        //binded version in add/removeEventListener
+        this.bindedCheckKey = this.checkKey.bind(this)
+
         //stats
         this.gameStartTime = 0;
         this.combo = 0;
@@ -36,7 +40,7 @@ class WordTaiko {
         this.resetGameTimer();
         this.drawStats();
         clearInterval(this.loopID);
-        document.addEventListener("keydown", this.checkKey.bind(this));
+        document.addEventListener("keydown", this.bindedCheckKey);
 
         //start the blinking of the insert
         setInterval(this.placeCountdown.bind(this), 100);
@@ -159,7 +163,7 @@ class WordTaiko {
     stopGame() {
         this.gameState = false;
         clearInterval(this.loopID);
-        document.removeEventListener("keydown", this.checkKey.bind(this));
+        document.removeEventListener("keydown", this.bindedCheckKey);
         alert("done");
     }
 
@@ -177,8 +181,9 @@ class WordTaiko {
             //want to show 0 before allowing alert
             document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
             this.stopGame();
+        } else {
+            document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
         }
-        document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
     }
 
     playKeyHitAudio() {
