@@ -17,7 +17,7 @@ class WordTaiko {
         this.wordsSpaced = "";
         this.charactersPerMin = 0;
         this.wordsPerMin = 0;
-        this.placeX = window.innerWidth / 3;
+        this.placeX = window.innerWidth / 6;
         this.placeY = 20;
         this.gameState = false;
         this.placeTimer = 5;
@@ -263,7 +263,7 @@ function init() {
     //on window resize, chnage widths and redraw words
     window.addEventListener("resize", function (event) {
         canvas.width = window.innerWidth;
-        this.placeX = window.innerWidth / 3;
+        this.placeX = window.innerWidth / 5;
         this.drawWords();
     }.bind(currentGame));
 }
