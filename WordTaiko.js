@@ -5,7 +5,7 @@ canvas.width = window.innerWidth;
 
 
 const wordCount = 180;
-const apiKey = "2PZEUC8V";
+const apiKey = "LLQTBJXD";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");

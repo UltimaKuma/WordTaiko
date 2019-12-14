@@ -1,9 +1,20 @@
 body {
+    margin: 0%;
     align-content:center;
     align-items:space-around;
     background-color:#24252A;
     display:grid;
     justify-items:stretch;
+}
+
+.header{
+    text-align: left;
+    display: inline;
+    line-height: 0;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    background-color:#7851A9;
+    padding: 10px;
 }
 
 button {
@@ -16,7 +27,7 @@ button {
     display: inline-block;
     font-size: 16px;
     transition: 0.3s;
-    font-family: "Calibri";
+    font-family: 'Montserrat', sans-serif;
 }
 
 button:hover{
@@ -34,7 +45,7 @@ button:hover{
     text-align: center;
     display: inline-block;
     line-height: 30%;
-    font-family: "Calibri";
+    font-family: 'Montserrat', sans-serif;
     color: white;
 }
 
