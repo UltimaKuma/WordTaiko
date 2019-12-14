@@ -169,7 +169,7 @@ class WordTaiko {
 
     resetGameTimer() {
         this.gameTimer = 60;
-        document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
+        document.getElementById("timer").innerHTML = this.gameTimer;
     }
 
     gameCountdown() {
@@ -179,10 +179,10 @@ class WordTaiko {
         if (this.gameTimer <= 0) {
             this.gameTimer = 0;
             //want to show 0 before allowing alert
-            document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
+            document.getElementById("timer").innerHTML = this.gameTimer;
             this.stopGame();
         } else {
-            document.getElementsByClassName("timer")[0].innerHTML = this.gameTimer;
+            document.getElementById("timer").innerHTML = this.gameTimer;
         }
     }
 
@@ -248,10 +248,10 @@ class WordTaiko {
 
     drawStats() {
         //draw CPM
-        document.getElementsByClassName("combo")[0].innerHTML = this.combo;
-        document.getElementsByClassName("cpm")[0].innerHTML = this.charactersPerMin;
-        document.getElementsByClassName("wpm")[0].innerHTML = this.wordsPerMin;
-        document.getElementsByClassName("accuracy")[0].innerHTML = this.accuracy.toFixed(1) + "%"; 
+        document.getElementById("combo").innerHTML = this.combo;
+        document.getElementById("cpm").innerHTML = this.charactersPerMin;
+        document.getElementById("wpm").innerHTML = this.wordsPerMin;
+        document.getElementById("accuracy").innerHTML = this.accuracy.toFixed(1) + "%"; 
     }
 
 }

@@ -14,7 +14,8 @@ body {
     font-family: 'Montserrat', sans-serif;
     color: white;
     background-color:#7851A9;
-    padding: 10px;
+    padding: 5px 10px 5px 10px;
+    font-size: 14px;
 }
 
 button {
@@ -26,33 +27,44 @@ button {
     text-align: center;
     display: inline-block;
     font-size: 16px;
-    transition: 0.3s;
     font-family: 'Montserrat', sans-serif;
 }
 
 button:hover{
+    transition: all 0.3s;
     background-color: #583189;
 }
 
 #stats{
-    /* height: 100px; */
+    height: 57px; 
     text-align: center;
-    display: inline-block;
+    display: block;
+    padding: 5px;
 }
 
-#stats div{
+.card{
     width: 18%;
     text-align: center;
     display: inline-block;
-    line-height: 30%;
     font-family: 'Montserrat', sans-serif;
     color: white;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: all 0.2s;
+    position: relative;
 }
 
-#stats h3{
-    font-size: 24px;
-}
-
-#stats p{
+.card .cardHeader{
     font-size: 18px;
+    background-color:rgb(58, 58, 61);
+    padding: 4px;
+}
+
+.card .cardBody{
+    font-size: 15px;
+    background-color:#44454A;
+    padding: 4px;
+}
+
+.card:hover{
+    width: 19%;
 }
