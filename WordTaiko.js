@@ -5,7 +5,7 @@ canvas.width = window.innerWidth;
 
 
 const wordCount = 180;
-const apiKey = "PGDDI4S4";
+const apiKey = "2PZEUC8V";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
@@ -29,6 +29,7 @@ class WordTaiko {
         this.maxCombo = 0;
         this.charactersPerMin = 0;
         this.wordsPerMin = 0;
+        this.accuracy = 0;
 
         this.getWords();
         this.drawWords();
@@ -75,7 +76,8 @@ class WordTaiko {
                 this.currentChar = 0
             }
             this.playKeyHitAudio();
-            //printable char
+
+        //printable chars
         } else if (event.key.length === 1) {
             let correctChar = (event.key == this.wordsSpaced.charAt(this.currentChar));
             this.wordsInput.push({
@@ -112,8 +114,14 @@ class WordTaiko {
         if (this.maxCombo < this.combo) {
             this.maxCombo = this.combo;
         }
+
+        //calc accuracy to 1dp percentage
+        this.accuracy = (this.currentChar==0) ? 0.0 : this.charactersPerMin/this.currentChar*100
+
         //reset char place timer
         this.placeTimer = 5;
+
+        //draw components
         this.drawWords();
         this.drawStats();
     }
@@ -238,6 +246,7 @@ class WordTaiko {
         document.getElementsByClassName("combo")[0].innerHTML = this.combo;
         document.getElementsByClassName("cpm")[0].innerHTML = this.charactersPerMin;
         document.getElementsByClassName("wpm")[0].innerHTML = this.wordsPerMin;
+        document.getElementsByClassName("accuracy")[0].innerHTML = this.accuracy.toFixed(1) + "%"; 
     }
 
 }
