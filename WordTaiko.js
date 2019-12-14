@@ -175,7 +175,7 @@ class WordTaiko {
     gameCountdown() {
         //calculate difference between game start and current
         let delta = Date.now() - this.gameStartTime;
-        this.gameTimer = 60 - Math.floor(delta / 1000);
+        this.gameTimer = Math.floor(60 - (delta / 1000));
         if (this.gameTimer <= 0) {
             this.gameTimer = 0;
             //want to show 0 before allowing alert
