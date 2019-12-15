@@ -17,11 +17,7 @@ const keyHitAudio = new Audio("audio/KeyHit.wav");
 
 class WordTaiko {
     constructor() {
-        this.currentChar = 0;
-        this.wordsInput = [];
         this.wordsSpaced = "";
-        this.charactersPerMin = 0;
-        this.wordsPerMin = 0;
         this.placeX = window.innerWidth / 6;
         this.placeY = 20;
         this.gameState = false;
@@ -32,7 +28,20 @@ class WordTaiko {
         //binded version in add/removeEventListener
         this.bindedCheckKey = this.checkKey.bind(this)
 
+        this.resetGame();
+
+        //start the blinking of the insert
+        setInterval(this.placeCountdown.bind(this), 100);
+
+    }
+
+    resetGame() {
+        //when reset, game does not start until input detected
+        this.gameState = false;
+
         //stats
+        this.wordsInput = [];
+        this.currentChar = 0;
         this.gameStartTime = 0;
         this.combo = 0;
         this.maxCombo = 0;
@@ -44,12 +53,10 @@ class WordTaiko {
         this.drawWords();
         this.resetGameTimer();
         this.drawStats();
+
+        //stop current loop and add event listener again to allow input
         clearInterval(this.loopID);
         document.addEventListener("keydown", this.bindedCheckKey);
-
-        //start the blinking of the insert
-        setInterval(this.placeCountdown.bind(this), 100);
-
     }
 
     checkKey(event) {
@@ -271,10 +278,11 @@ function init() {
         this.placeX = window.innerWidth / 5;
         this.drawWords();
     }.bind(currentGame));
+
+    document.getElementById("restart").onclick = currentGame.resetGame.bind(currentGame);
 }
 
 init();
 
-document.getElementById("restart").onclick = init.bind(currentGame);
 
 
