@@ -1,4 +1,9 @@
 "use strict";
+
+  /////////////
+ //WordTaiko//
+/////////////
+
 const canvas = document.getElementById("wordTaiko");
 const context = canvas.getContext("2d");
 canvas.width = window.innerWidth;
@@ -146,11 +151,6 @@ class WordTaiko {
         http.send();
     }
 
-
-
-
-
-
     startGame() {
         if (typeof this.loopID != 'undefined') {
             clearInterval(this.loopID);
@@ -256,6 +256,11 @@ class WordTaiko {
 
 }
 
+  //////////////////
+ //Initialisation//
+//////////////////
+
+var currentGame;
 
 function init() {
     currentGame = new WordTaiko();
@@ -267,8 +272,6 @@ function init() {
         this.drawWords();
     }.bind(currentGame));
 }
-
-var currentGame;
 
 init();
 

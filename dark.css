@@ -18,19 +18,19 @@ body {
     font-size: 14px;
 }
 
-button {
+#restart {
     background-color: #7851A9;
-    border: none;
+    height: 24px;
+    width: 24px;
+    position: relative;
+    bottom: 89px;
+    float: right;
     cursor: pointer;
     color: white;
-    padding: 12px 32px;
-    text-align: center;
-    display: inline-block;
-    font-size: 16px;
-    font-family: 'Montserrat', sans-serif;
+    padding: 2px;
 }
 
-button:hover{
+#restart:hover{
     transition: all 0.3s;
     background-color: #583189;
 }
