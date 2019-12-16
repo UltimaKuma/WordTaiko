@@ -10,14 +10,13 @@ canvas.width = window.innerWidth;
 
 
 const wordCount = 180;
-const apiKey = "LLQTBJXD";
+const apiKey = "MVKBFV23";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
 
 class WordTaiko {
     constructor() {
-        this.wordsSpaced = "";
         this.placeX = window.innerWidth / 6;
         this.placeY = 20;
         this.gameState = false;
@@ -38,8 +37,10 @@ class WordTaiko {
     resetGame() {
         //when reset, game does not start until input detected
         this.gameState = false;
+        document.removeEventListener("keydown", this.bindedCheckKey);
 
         //stats
+        this.wordsSpaced = "";
         this.wordsInput = [];
         this.currentChar = 0;
         this.gameStartTime = 0;
@@ -49,14 +50,14 @@ class WordTaiko {
         this.wordsPerMin = 0;
         this.accuracy = 0;
 
-        this.getWords();
+        //will draw background as words not yet obtained
         this.drawWords();
+        this.getWords();
         this.resetGameTimer();
         this.drawStats();
 
-        //stop current loop and add event listener again to allow input
+        //stop current loop
         clearInterval(this.loopID);
-        document.addEventListener("keydown", this.bindedCheckKey);
     }
 
     checkKey(event) {
@@ -152,6 +153,8 @@ class WordTaiko {
                 this.wordsSpaced = wordList.join(" ");
                 //draw words once done
                 this.drawWords();
+                //allow input once words obtained
+                document.addEventListener("keydown", this.bindedCheckKey);
             }
         }.bind(this);
         http.open("GET", url);
