@@ -10,7 +10,7 @@ canvas.width = window.innerWidth;
 
 
 const wordCount = 180;
-const apiKey = "MVKBFV23";
+const apiKey = "QZ3I3M0C";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
@@ -31,7 +31,6 @@ class WordTaiko {
 
         //start the blinking of the insert
         setInterval(this.placeCountdown.bind(this), 100);
-
     }
 
     resetGame() {
@@ -174,7 +173,14 @@ class WordTaiko {
         this.gameState = false;
         clearInterval(this.loopID);
         document.removeEventListener("keydown", this.bindedCheckKey);
-        alert("done");
+        let stats = {
+            maxCombo: this.maxCombo,
+            charactersPerMin: this.charactersPerMin,
+            wordsPerMin: this.wordsPerMin,
+            accuracy: this.accuracy
+        };
+        resultsModal.setResults(stats);
+        resultsModal.showModal();
     }
 
     resetGameTimer() {
@@ -265,10 +271,45 @@ class WordTaiko {
     }
 
 }
-   /////////
-  //Modal//
- /////////
 
+   /////////////////
+  //Results Modal//
+ /////////////////
+
+class Results{
+    constructor(){
+        this.modal = document.getElementById("results");
+        window.onclick = function(event) {
+            if (event.target == this.modal) {
+                this.modal.style.display = "none";
+            }
+        }.bind(this);
+        document.getElementById("modalClose").onclick = this.handleClose.bind(this);
+        document.getElementById("modalRestart").onclick = this.handleReset.bind(this);
+    }
+
+    setResults(stats){
+        this.stats=stats;
+    }
+
+    showModal(){
+        document.getElementById("maxComboResult").innerHTML = this.stats.maxCombo;
+        document.getElementById("cpmResult").innerHTML = this.stats.charactersPerMin;
+        document.getElementById("wpmResult").innerHTML = this.stats.wordsPerMin;
+        document.getElementById("accuracyResult").innerHTML = this.stats.accuracy.toFixed(1) + "%"; 
+
+        this.modal.style.display = "block";
+    }
+
+    handleClose(){
+        this.modal.style.display = "none";
+    }
+
+    handleReset(){
+        this.modal.style.display = "none";
+        currentGame.resetGame();
+    }
+}
  
 
  
@@ -277,9 +318,11 @@ class WordTaiko {
 //////////////////
 
 var currentGame;
+var resultsModal;
 
 function init() {
     currentGame = new WordTaiko();
+    resultsModal = new Results();
 
     //on window resize, chnage widths and redraw words
     window.addEventListener("resize", function (event) {

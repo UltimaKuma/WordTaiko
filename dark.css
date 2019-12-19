@@ -113,6 +113,6 @@ button:hover{
 
 
 
-.modal #close, .modal #restart{
+.modal #modalClose, .modal #modalRestart{
     margin: 20px 20px 0px 20px;
 }
