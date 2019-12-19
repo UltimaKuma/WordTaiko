@@ -3,7 +3,6 @@ body {
     align-content:center;
     align-items:space-around;
     background-color:#24252A;
-    display:grid;
     justify-items:stretch;
 }
 
@@ -100,9 +99,25 @@ button:hover{
     background-color: rgba(0,0,0,0.2);
 }
 
+@keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0;
+    }
+    to {
+        top: 0px;
+        opacity: 1;
+    }
+}  
+
 .modal-box {
+    position: relative;
     margin: 10%;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    animation-name: animatetop;
+    animation-duration: 0.2s;
+    animation-timing-function: ease;
+
 }
 
 .modal-content{

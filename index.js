@@ -279,6 +279,13 @@ class WordTaiko {
 class Results{
     constructor(){
         this.modal = document.getElementById("results");
+        this.stats = {
+            maxCombo: 0,
+            charactersPerMin: 0,
+            wordsPerMin: 0,
+            accuracy: 0
+        };
+
         window.onclick = function(event) {
             if (event.target == this.modal) {
                 this.modal.style.display = "none";
