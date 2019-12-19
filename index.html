@@ -38,10 +38,46 @@
             <div class="cardBody" id="accuracy">00</div>
         </div>
     </div>
-    <div>
+
+    <div id="textArea">
         <canvas id="wordTaiko" width="672" height="85"></canvas>
         <img id="restart" src="icons/refresh.png"></img>
     </div>
+
+    <div id="results" class="modal">
+        <div class="modal-box">
+            <div class="header">
+                <h1>Results</h1>
+            </div>
+
+            <div class="modal-content">
+                <div id="results">
+                    <div class="card">
+                        <div class="cardHeader"><b>Max Combo</b></div>
+                        <div class="cardBody" id="timer">00</div>
+                    </div>
+                    <div class="card">
+                        <div class="cardHeader"><b>CPM</b></div>
+                        <div class="cardBody" id="cpm">00</div>
+                    </div>
+                    <div class="card">
+                        <div class="cardHeader"><b>WPM</b></div>
+                        <div class="cardBody" id="wpm">00</div>
+                    </div>
+                    <div class="card">
+                        <div class="cardHeader"><b>Accuracy</b></div>
+                        <div class="cardBody" id="accuracy">00</div>
+                    </div>
+                </div>
+
+                <div>
+                    <button id="close">Close</button>
+                    <button id="restart">Restart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="index.js"></script>
 </body>
 
