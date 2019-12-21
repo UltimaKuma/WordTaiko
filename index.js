@@ -181,6 +181,9 @@ class WordTaiko {
         };
         resultsModal.setResults(stats);
         resultsModal.showModal();
+        
+        //adds result, and renders the chart as DB is asynchronous
+        localDB.addResult(stas);
     }
 
     resetGameTimer() {
@@ -319,17 +322,110 @@ class Results{
 }
  
 
- 
+  ///////////////////////////
+ //IndexedDB Local Storage//
+///////////////////////////
+class ResultsDatabase{
+    constructor(){
+        this.db;
+
+        window.onload = function(){
+            let request = window.indexedDB.open('results_db', 1);
+
+            request.onerror = function() {
+                console.log("Database failed to open");
+            };
+
+            request.onsuccess = function() {
+                console.log("Database opened successfully");
+
+                //store db object
+                this.db = request.result;
+
+                //get results and draw upon addition
+                getResults();
+            };
+
+            request.onupgradeneeded = function(e){
+                this.db = e.target.result;
+
+                //initialising database
+                let objectStore = db.createObjectStore('results_os', {keyPath: 'id', autoIncrement: true });
+                objectStore.createIndex("maxCombo", "maxCombo", {unique: false});
+                objectStore.createIndex("charactersPerMin", "charactersPerMin", {unique: false});
+                objectStore.createIndex("wordsPerMin", "wordsPerMin", {unique: false});
+                objectStore.createIndex("accuracy", "accuracy", {unique: false});
+            }
+        }
+    }
+
+    addResult(result){
+        //open a read/write db transaction
+        let transaction = db.transaction(["results_os"], 'readwrite');
+
+        //call object store
+        let objectStore = transaction.objectStore('results_os');
+
+        //make request to add results to database
+        let request = objectStore = objectStore.add(result);
+
+        transaction.oncomplete = function(){
+            console.log("Database transaction completed");
+            //gets results from db and draws chart
+            getResults();
+        };
+
+        transaction.onerror = function(){
+            console.log("Database transaction failed");
+        };
+    }
+
+    getResults(){
+        //reset array
+        results = [];
+
+        let objectStore = db.transaction("results_os").objectStore("results_os");
+        objectStore.openCursor().onsuccess = function(e){
+            let cursor = e.target.result;
+
+            if(cursor) {
+                let result = {
+                    id: cursor.value.id,
+                    maxCombo: cursor.value.maxCombo,
+                    charactersPerMin: cursor.value.charactersPerMin,
+                    wordsPerMin: cursor.value.wordsPerMin,
+                    accuracy: cursor.value.accuracy
+                };
+
+                results.push(result);
+            }else{
+                //final iteration
+                console.log("All results obtained");
+                // TODO - draw results
+            }
+        };
+    }
+
+
+
+}
+
+
+
   //////////////////
  //Initialisation//
 //////////////////
 
 var currentGame;
 var resultsModal;
+var localDB;
+
+var results = []
 
 function init() {
     currentGame = new WordTaiko();
     resultsModal = new Results();
+    localDB = new ResultsDatabase();
 
     //on window resize, chnage widths and redraw words
     window.addEventListener("resize", function (event) {
