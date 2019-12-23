@@ -182,8 +182,9 @@ class WordTaiko {
         resultsModal.setResults(stats);
         resultsModal.showModal();
         
-        //adds result, and renders the chart as DB is asynchronous
-        localDB.addResult(stas);
+        //adds result to DB
+        localDB.addResult(stats);
+        // TODO - add to results and render
     }
 
     resetGameTimer() {
@@ -325,6 +326,7 @@ class Results{
   ///////////////////////////
  //IndexedDB Local Storage//
 ///////////////////////////
+
 class ResultsDatabase{
     constructor(){
         this.db;
@@ -372,7 +374,6 @@ class ResultsDatabase{
         transaction.oncomplete = function(){
             console.log("Database transaction completed");
             //gets results from db and draws chart
-            getResults();
         };
 
         transaction.onerror = function(){
@@ -389,8 +390,8 @@ class ResultsDatabase{
             let cursor = e.target.result;
 
             if(cursor) {
+                // TODO - pray to christ that cursor is in order of id/input
                 let result = {
-                    id: cursor.value.id,
                     maxCombo: cursor.value.maxCombo,
                     charactersPerMin: cursor.value.charactersPerMin,
                     wordsPerMin: cursor.value.wordsPerMin,
@@ -405,9 +406,6 @@ class ResultsDatabase{
             }
         };
     }
-
-
-
 }
 
 
