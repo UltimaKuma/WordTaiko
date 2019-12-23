@@ -1,8 +1,10 @@
 "use strict";
 
-  /////////////
- //WordTaiko//
 /////////////
+//WordTaiko//
+/////////////
+
+// TODO - throw all of this in constructor
 
 const canvas = document.getElementById("wordTaiko");
 const context = canvas.getContext("2d");
@@ -93,7 +95,7 @@ class WordTaiko {
             }
             this.playKeyHitAudio();
 
-        //printable chars
+            //printable chars
         } else if (event.key.length === 1) {
             let correctChar = (event.key == this.wordsSpaced.charAt(this.currentChar));
             this.wordsInput.push({
@@ -132,7 +134,7 @@ class WordTaiko {
         }
 
         //calc accuracy to 1dp percentage
-        this.accuracy = (this.currentChar==0) ? 0.0 : this.charactersPerMin/this.currentChar*100
+        this.accuracy = (this.currentChar == 0) ? 0.0 : this.charactersPerMin / this.currentChar * 100
 
         //reset char place timer
         this.placeTimer = 5;
@@ -181,7 +183,7 @@ class WordTaiko {
         };
         resultsModal.setResults(stats);
         resultsModal.showModal();
-        
+
         //adds result to DB
         localDB.addResult(stats);
         // TODO - add to results and render
@@ -271,17 +273,17 @@ class WordTaiko {
         document.getElementById("combo").innerHTML = this.combo;
         document.getElementById("cpm").innerHTML = this.charactersPerMin;
         document.getElementById("wpm").innerHTML = this.wordsPerMin;
-        document.getElementById("accuracy").innerHTML = this.accuracy.toFixed(1) + "%"; 
+        document.getElementById("accuracy").innerHTML = this.accuracy.toFixed(1) + "%";
     }
 
 }
 
-   /////////////////
-  //Results Modal//
- /////////////////
+/////////////////
+//Results Modal//
+/////////////////
 
-class Results{
-    constructor(){
+class Results {
+    constructor() {
         this.modal = document.getElementById("results");
         this.stats = {
             maxCombo: 0,
@@ -290,7 +292,7 @@ class Results{
             accuracy: 0
         };
 
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == this.modal) {
                 this.modal.style.display = "none";
             }
@@ -299,71 +301,75 @@ class Results{
         document.getElementById("modalRestart").onclick = this.handleReset.bind(this);
     }
 
-    setResults(stats){
-        this.stats=stats;
+    setResults(stats) {
+        this.stats = stats;
     }
 
-    showModal(){
+    showModal() {
         document.getElementById("maxComboResult").innerHTML = this.stats.maxCombo;
         document.getElementById("cpmResult").innerHTML = this.stats.charactersPerMin;
         document.getElementById("wpmResult").innerHTML = this.stats.wordsPerMin;
-        document.getElementById("accuracyResult").innerHTML = this.stats.accuracy.toFixed(1) + "%"; 
+        document.getElementById("accuracyResult").innerHTML = this.stats.accuracy.toFixed(1) + "%";
 
         this.modal.style.display = "block";
     }
 
-    handleClose(){
+    handleClose() {
         this.modal.style.display = "none";
     }
 
-    handleReset(){
+    handleReset() {
         this.modal.style.display = "none";
         currentGame.resetGame();
     }
 }
- 
 
-  ///////////////////////////
- //IndexedDB Local Storage//
+
+///////////////////////////
+//IndexedDB Local Storage//
 ///////////////////////////
 
-class ResultsDatabase{
-    constructor(){
+class ResultsDatabase {
+    constructor() {
         this.db;
 
-        window.onload = function(){
+        window.onload = function () {
             let request = window.indexedDB.open('results_db', 1);
 
-            request.onerror = function() {
+            request.onerror = function () {
                 console.log("Database failed to open");
             };
 
-            request.onsuccess = function() {
+            request.onsuccess = function () {
                 console.log("Database opened successfully");
 
                 //store db object
                 this.db = request.result;
 
-                //get results and draw upon addition
-                getResults();
-            };
+                console.log(this);
 
-            request.onupgradeneeded = function(e){
+                //get results and draw upon addition
+                //call used as function needs to be used immediately
+                this.getResults.call(this);
+            }.bind(this);
+
+            request.onupgradeneeded = function (e) {
                 this.db = e.target.result;
 
                 //initialising database
-                let objectStore = db.createObjectStore('results_os', {keyPath: 'id', autoIncrement: true });
-                objectStore.createIndex("maxCombo", "maxCombo", {unique: false});
-                objectStore.createIndex("charactersPerMin", "charactersPerMin", {unique: false});
-                objectStore.createIndex("wordsPerMin", "wordsPerMin", {unique: false});
-                objectStore.createIndex("accuracy", "accuracy", {unique: false});
-            }
-        }
+                let objectStore = this.db.createObjectStore('results_os', { keyPath: 'id', autoIncrement: true });
+                objectStore.createIndex("maxCombo", "maxCombo", { unique: false });
+                objectStore.createIndex("charactersPerMin", "charactersPerMin", { unique: false });
+                objectStore.createIndex("wordsPerMin", "wordsPerMin", { unique: false });
+                objectStore.createIndex("accuracy", "accuracy", { unique: false });
+            }.bind(this);
+
+        }.bind(this);
     }
 
-    addResult(result){
+    addResult(result) {
         //open a read/write db transaction
-        let transaction = db.transaction(["results_os"], 'readwrite');
+        let transaction = this.db.transaction(["results_os"], 'readwrite');
 
         //call object store
         let objectStore = transaction.objectStore('results_os');
@@ -371,25 +377,27 @@ class ResultsDatabase{
         //make request to add results to database
         let request = objectStore = objectStore.add(result);
 
-        transaction.oncomplete = function(){
+        transaction.oncomplete = function () {
             console.log("Database transaction completed");
             //gets results from db and draws chart
         };
 
-        transaction.onerror = function(){
+        transaction.onerror = function () {
             console.log("Database transaction failed");
         };
     }
 
-    getResults(){
+    getResults() {
         //reset array
         results = [];
 
-        let objectStore = db.transaction("results_os").objectStore("results_os");
-        objectStore.openCursor().onsuccess = function(e){
+        console.log(this);
+
+        let objectStore = this.db.transaction("results_os").objectStore("results_os");
+        objectStore.openCursor().onsuccess = function (e) {
             let cursor = e.target.result;
 
-            if(cursor) {
+            if (cursor) {
                 // TODO - pray to christ that cursor is in order of id/input
                 let result = {
                     maxCombo: cursor.value.maxCombo,
@@ -399,9 +407,10 @@ class ResultsDatabase{
                 };
 
                 results.push(result);
-            }else{
+            } else {
                 //final iteration
                 console.log("All results obtained");
+                console.log(results);
                 // TODO - draw results
             }
         };
@@ -409,14 +418,40 @@ class ResultsDatabase{
 }
 
 
+///////////
+//ChartJS//
+///////////
 
-  //////////////////
- //Initialisation//
+class ResultsChart {
+    constructor() {
+        this.chartCanvas = document.getElementById('resultsChart').getContext('2d');
+
+        let lineChart = new Chart(this.chartCanvas, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "Results",
+                    backgroundColor: "#7851A9",
+                    borderColor: '#583189',
+                    data: [1, 2, 3, 4, 5, 6],
+                }]
+            },
+            options: {
+
+            }
+        });
+    }
+}
+
+//////////////////
+//Initialisation//
 //////////////////
 
 var currentGame;
 var resultsModal;
 var localDB;
+var resultsChart;
 
 var results = []
 
@@ -424,6 +459,7 @@ function init() {
     currentGame = new WordTaiko();
     resultsModal = new Results();
     localDB = new ResultsDatabase();
+    resultsChart = new ResultsChart();
 
     //on window resize, chnage widths and redraw words
     window.addEventListener("resize", function (event) {
