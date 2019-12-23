@@ -176,6 +176,7 @@ class WordTaiko {
         clearInterval(this.loopID);
         document.removeEventListener("keydown", this.bindedCheckKey);
         let stats = {
+            timestamp: DateFormatter.getFormattedDate(),
             maxCombo: this.maxCombo,
             charactersPerMin: this.charactersPerMin,
             wordsPerMin: this.wordsPerMin,
@@ -306,6 +307,7 @@ class Results {
     }
 
     showModal() {
+        // TODO - maybe add timestamp
         document.getElementById("maxComboResult").innerHTML = this.stats.maxCombo;
         document.getElementById("cpmResult").innerHTML = this.stats.charactersPerMin;
         document.getElementById("wpmResult").innerHTML = this.stats.wordsPerMin;
@@ -346,8 +348,6 @@ class ResultsDatabase {
                 //store db object
                 this.db = request.result;
 
-                console.log(this);
-
                 //get results and draw upon addition
                 //call used as function needs to be used immediately
                 this.getResults.call(this);
@@ -358,6 +358,7 @@ class ResultsDatabase {
 
                 //initialising database
                 let objectStore = this.db.createObjectStore('results_os', { keyPath: 'id', autoIncrement: true });
+                objectStore.createIndex("timestamp", "timestamp", { unique: false });
                 objectStore.createIndex("maxCombo", "maxCombo", { unique: false });
                 objectStore.createIndex("charactersPerMin", "charactersPerMin", { unique: false });
                 objectStore.createIndex("wordsPerMin", "wordsPerMin", { unique: false });
@@ -391,8 +392,6 @@ class ResultsDatabase {
         //reset array
         results = [];
 
-        console.log(this);
-
         let objectStore = this.db.transaction("results_os").objectStore("results_os");
         objectStore.openCursor().onsuccess = function (e) {
             let cursor = e.target.result;
@@ -400,6 +399,7 @@ class ResultsDatabase {
             if (cursor) {
                 // TODO - pray to christ that cursor is in order of id/input
                 let result = {
+                    timestamp: cursor.value.timestamp,
                     maxCombo: cursor.value.maxCombo,
                     charactersPerMin: cursor.value.charactersPerMin,
                     wordsPerMin: cursor.value.wordsPerMin,
@@ -429,7 +429,7 @@ class ResultsChart {
         let lineChart = new Chart(this.chartCanvas, {
             type: 'line',
             data: {
-                labels: [],
+                labels: ["1","2","3","4","5","6"],
                 datasets: [{
                     label: "Results",
                     backgroundColor: "#7851A9",
@@ -438,9 +438,45 @@ class ResultsChart {
                 }]
             },
             options: {
-
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 90,
+                            minRotation: 80
+                        }
+                    }]
+                }
             }
         });
+    }
+}
+
+/////////////////
+//DateFormatter//
+/////////////////
+
+class DateFormatter{
+    static pad(num) {
+        if (num < 10) {
+            num = "0" + num;
+        }
+        return num
+    }
+
+    static getFormattedDate(){
+        let d = new Date();
+
+        let hours = this.pad(d.getHours());
+        let minutes = this.pad(d.getMinutes());
+        let seconds = this.pad(d.getSeconds());
+
+        let days = this.pad(d.getDate());
+        let months = this.pad(d.getMonth());
+        let years = d.getFullYear();
+
+        let fullDate = hours + ":" + minutes + ":" + seconds + " " + days + "/"+ months + "/"+ years;
+        return fullDate
     }
 }
 
