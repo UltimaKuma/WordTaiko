@@ -12,7 +12,7 @@ canvas.width = window.innerWidth;
 
 
 const wordCount = 180;
-const apiKey = "QZ3I3M0C";
+const apiKey = "NNYGYXAE";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
@@ -187,7 +187,7 @@ class WordTaiko {
 
         //adds result to DB
         localDB.addResult(stats);
-        // TODO - add to results and render
+        resultsChart.addResult(stats);
     }
 
     resetGameTimer() {
@@ -376,11 +376,13 @@ class ResultsDatabase {
         let objectStore = transaction.objectStore('results_os');
 
         //make request to add results to database
-        let request = objectStore = objectStore.add(result);
+        let request = objectStore.add(result);
+        request.onsuccess = function(){
+            console.log("Request done")
+        }
 
         transaction.oncomplete = function () {
             console.log("Database transaction completed");
-            //gets results from db and draws chart
         };
 
         transaction.onerror = function () {
@@ -389,9 +391,7 @@ class ResultsDatabase {
     }
 
     getResults() {
-        //reset array
-        results = [];
-
+        let results = [];
         let objectStore = this.db.transaction("results_os").objectStore("results_os");
         objectStore.openCursor().onsuccess = function (e) {
             let cursor = e.target.result;
@@ -407,11 +407,14 @@ class ResultsDatabase {
                 };
 
                 results.push(result);
+                console.log("Iterating")
+                cursor.continue();
             } else {
                 //final iteration
                 console.log("All results obtained");
                 console.log(results);
                 // TODO - draw results
+                resultsChart.setResults(results);
             }
         };
     }
@@ -424,32 +427,67 @@ class ResultsDatabase {
 
 class ResultsChart {
     constructor() {
-        this.chartCanvas = document.getElementById('resultsChart').getContext('2d');
-
-        let lineChart = new Chart(this.chartCanvas, {
+        this.results = [];
+        this.chartResultType = "maxCombo";
+        
+        let chartCanvas = document.getElementById('resultsChart').getContext('2d');
+        this.lineChart = new Chart(chartCanvas, {
             type: 'line',
             data: {
-                labels: ["1","2","3","4","5","6"],
+                labels: [], // TODO - x-axis
                 datasets: [{
                     label: "Results",
                     backgroundColor: "#7851A9",
                     borderColor: '#583189',
-                    data: [1, 2, 3, 4, 5, 6],
+                    data: [], // TODO - y-axis
                 }]
             },
             options: {
+                maintainAspectRatio: false,
                 scales: {
                     xAxes: [{
                         ticks: {
                             autoSkip: false,
                             maxRotation: 90,
-                            minRotation: 80
+                            minRotation: 60
                         }
                     }]
                 }
             }
         });
     }
+
+    setChartResultType(resultType){
+        this.chartResultType = resultType;
+        this.updateChart();
+    }
+
+    setResults(results){
+        console.log("Setting results");
+        this.results=results;
+        this.updateChart();
+    }
+
+    addResult(result){
+         this.results.push(result);
+         this.lineChart.data.labels.push(result.timestamp);
+         this.lineChart.data.datasets[0].data.push(result[this.chartResultType]);
+         this.lineChart.update();
+    }
+
+    updateChart(){
+        console.log("Updating chart");
+        this.lineChart.data.datasets[0].label=this.chartResultType;
+        this.lineChart.data.labels = [];
+        this.lineChart.data.datasets[0].data = [];
+        for(let i = 0; i<this.results.length; i++){
+            this.lineChart.data.labels.push(this.results[i].timestamp);
+            this.lineChart.data.datasets[0].data.push(this.results[i][this.chartResultType]);
+        }
+        console.log(this.lineChart);
+        this.lineChart.update();
+    }
+
 }
 
 /////////////////
