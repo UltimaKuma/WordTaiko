@@ -443,7 +443,7 @@ class ResultsChart {
                 }]
             },
             options: {
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
                 scales: {
                     xAxes: [{
                         ticks: {
