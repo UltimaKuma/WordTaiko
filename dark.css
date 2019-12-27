@@ -86,6 +86,11 @@ button:hover{
     width: 19%;
 }
 
+/* CHART */
+.chartContainer{
+    padding: 20px 20px 20px 20px;
+}
+
 /* MODAL */
 .modal {
     display: none;
@@ -125,8 +130,6 @@ button:hover{
     text-align: center;
     padding: 20px;
 }
-
-
 
 .modal #modalClose, .modal #modalRestart{
     margin: 20px 20px 0px 20px;

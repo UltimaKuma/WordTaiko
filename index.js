@@ -144,22 +144,26 @@ class WordTaiko {
         this.drawStats();
     }
 
-    //make actual API call once done
+    // TODO - change API
     getWords() {
-        let wordList;
-        http.onreadystatechange = function (event) {
-            if (http.readyState == 4 && http.status == 200) {
-                // get response and parse
-                wordList = JSON.parse(http.responseText);
-                this.wordsSpaced = wordList.join(" ");
-                //draw words once done
-                this.drawWords();
-                //allow input once words obtained
-                document.addEventListener("keydown", this.bindedCheckKey);
-            }
-        }.bind(this);
-        http.open("GET", url);
-        http.send();
+        // let wordList;
+        // http.onreadystatechange = function (event) {
+        //     if (http.readyState == 4 && http.status == 200) {
+        //         // get response and parse
+        //         wordList = JSON.parse(http.responseText);
+        //         this.wordsSpaced = wordList.join(" ");
+        //         //draw words once done
+        //         this.drawWords();
+        //         //allow input once words obtained
+        //         document.addEventListener("keydown", this.bindedCheckKey);
+        //     }
+        // }.bind(this);
+        // http.open("GET", url);
+        // http.send();
+
+        this.wordsSpaced="bruh lol k dude";
+        this.drawWords();
+        document.addEventListener("keydown", this.bindedCheckKey);
     }
 
     startGame() {
@@ -443,13 +447,28 @@ class ResultsChart {
                 }]
             },
             options: {
+                defaultFontColor: "#ffffff",
+                legend: {
+                    display: false,
+                },
                 maintainAspectRatio: true,
                 scales: {
                     xAxes: [{
                         ticks: {
-                            autoSkip: false,
+                            display: false,
                             maxRotation: 90,
                             minRotation: 60
+                        },
+                        gridLines:{
+                            display: false,
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            fontColor: "white",
+                        },
+                        gridLines:{
+                            color: "#444"
                         }
                     }]
                 }
@@ -499,7 +518,7 @@ class DateFormatter{
         if (num < 10) {
             num = "0" + num;
         }
-        return num
+        return num;
     }
 
     static getFormattedDate(){
@@ -514,7 +533,7 @@ class DateFormatter{
         let years = d.getFullYear();
 
         let fullDate = hours + ":" + minutes + ":" + seconds + " " + days + "/"+ months + "/"+ years;
-        return fullDate
+        return fullDate;
     }
 }
 
