@@ -89,6 +89,7 @@ button:hover{
 /* CHART */
 .chartContainer{
     padding: 20px 20px 20px 20px;
+    background-color: #44454A;
 }
 
 /* MODAL */

@@ -468,7 +468,7 @@ class ResultsChart {
                             fontColor: "white",
                         },
                         gridLines:{
-                            color: "#444"
+                            color: "#777"
                         }
                     }]
                 }
