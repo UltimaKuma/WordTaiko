@@ -161,7 +161,7 @@ class WordTaiko {
         // http.open("GET", url);
         // http.send();
 
-        this.wordsSpaced="bruh lol k dude";
+        this.wordsSpaced = "bruh lol k dude";
         this.drawWords();
         document.addEventListener("keydown", this.bindedCheckKey);
     }
@@ -311,7 +311,6 @@ class Results {
     }
 
     showModal() {
-        // TODO - maybe add timestamp
         document.getElementById("maxComboResult").innerHTML = this.stats.maxCombo;
         document.getElementById("cpmResult").innerHTML = this.stats.charactersPerMin;
         document.getElementById("wpmResult").innerHTML = this.stats.wordsPerMin;
@@ -373,6 +372,8 @@ class ResultsDatabase {
     }
 
     addResult(result) {
+        console.log("Adding result to database");
+
         //open a read/write db transaction
         let transaction = this.db.transaction(["results_os"], 'readwrite');
 
@@ -381,7 +382,7 @@ class ResultsDatabase {
 
         //make request to add results to database
         let request = objectStore.add(result);
-        request.onsuccess = function(){
+        request.onsuccess = function () {
             console.log("Request done")
         }
 
@@ -401,7 +402,7 @@ class ResultsDatabase {
             let cursor = e.target.result;
 
             if (cursor) {
-                // TODO - pray to christ that cursor is in order of id/input
+                //christ is real
                 let result = {
                     timestamp: cursor.value.timestamp,
                     maxCombo: cursor.value.maxCombo,
@@ -417,10 +418,30 @@ class ResultsDatabase {
                 //final iteration
                 console.log("All results obtained");
                 console.log(results);
-                // TODO - draw results
                 resultsChart.setResults(results);
             }
         };
+    }
+
+    deleteResults() {
+        console.log("Deleting results");
+
+        //open a read/write db transaction
+        let transaction = this.db.transaction(["results_os"], 'readwrite');
+
+        transaction.onerror = function() {
+            console.log("Database transaction failed");
+        };
+
+        //call object store
+        let objectStore = transaction.objectStore('results_os');
+
+        //clear object store
+        let request = objectStore.clear();
+
+        request.onsuccess = function(){
+            console.log("Data Cleared");
+        }
     }
 }
 
@@ -433,12 +454,13 @@ class ResultsChart {
     constructor() {
         this.results = [];
         this.chartResultType = "maxCombo";
-        
+
+        //TODO - chnage graph to be more assthethicc as well as changing baseline
         let chartCanvas = document.getElementById('resultsChart').getContext('2d');
         this.lineChart = new Chart(chartCanvas, {
             type: 'line',
             data: {
-                labels: [], 
+                labels: [],
                 datasets: [{
                     label: "Results",
                     backgroundColor: "#7851A9",
@@ -459,7 +481,7 @@ class ResultsChart {
                             maxRotation: 90,
                             minRotation: 60
                         },
-                        gridLines:{
+                        gridLines: {
                             display: false,
                         }
                     }],
@@ -472,7 +494,7 @@ class ResultsChart {
                         ticks: {
                             fontColor: "white",
                         },
-                        gridLines:{
+                        gridLines: {
                             color: "#777"
                         }
                     }]
@@ -481,46 +503,51 @@ class ResultsChart {
         });
     }
 
-    setChartResultType(resultType){
+    setChartResultType(resultType) {
         console.log("Switching Results");
-        switch(resultType){
+        switch (resultType) {
             case "Max Combo":
-                this.chartResultType="maxCombo";
+                this.chartResultType = "maxCombo";
                 break;
             case "CPM":
-                this.chartResultType="charactersPerMin";
+                this.chartResultType = "charactersPerMin";
                 break;
             case "WPM":
-                this.chartResultType="wordsPerMin";
+                this.chartResultType = "wordsPerMin";
                 break;
             case "Accuracy":
-                this.chartResultType="accuracy";
+                this.chartResultType = "accuracy";
                 break;
             default:
-                this.chartResultType="maxCombo";
+                this.chartResultType = "maxCombo";
         }
         this.updateChart();
     }
 
-    setResults(results){
+    setResults(results) {
         console.log("Setting results");
-        this.results=results;
+        this.results = results;
         this.updateChart();
     }
 
-    addResult(result){
-         this.results.push(result);
-         this.lineChart.data.labels.push(result.timestamp);
-         this.lineChart.data.datasets[0].data.push(result[this.chartResultType]);
-         this.lineChart.update();
+    deleteResults(){
+        this.results = [];
+        this.updateChart();
     }
 
-    updateChart(){
+    addResult(result) {
+        this.results.push(result);
+        this.lineChart.data.labels.push(result.timestamp);
+        this.lineChart.data.datasets[0].data.push(result[this.chartResultType]);
+        this.lineChart.update();
+    }
+
+    updateChart() {
         console.log("Updating chart");
-        this.lineChart.data.datasets[0].label=this.chartResultType;
+        this.lineChart.data.datasets[0].label = this.chartResultType;
         this.lineChart.data.labels = [];
         this.lineChart.data.datasets[0].data = [];
-        for(let i = 0; i<this.results.length; i++){
+        for (let i = 0; i < this.results.length; i++) {
             this.lineChart.data.labels.push(this.results[i].timestamp);
             this.lineChart.data.datasets[0].data.push(this.results[i][this.chartResultType]);
         }
@@ -534,7 +561,7 @@ class ResultsChart {
 //DateFormatter//
 /////////////////
 
-class DateFormatter{
+class DateFormatter {
     static pad(num) {
         if (num < 10) {
             num = "0" + num;
@@ -542,7 +569,7 @@ class DateFormatter{
         return num;
     }
 
-    static getFormattedDate(){
+    static getFormattedDate() {
         let d = new Date();
 
         let hours = this.pad(d.getHours());
@@ -553,7 +580,7 @@ class DateFormatter{
         let months = this.pad(d.getMonth());
         let years = d.getFullYear();
 
-        let fullDate = hours + ":" + minutes + ":" + seconds + " " + days + "/"+ months + "/"+ years;
+        let fullDate = hours + ":" + minutes + ":" + seconds + " " + days + "/" + months + "/" + years;
         return fullDate;
     }
 }
@@ -584,14 +611,20 @@ function init() {
 
     //tab button handler
     let tabList = document.getElementsByClassName("tab");
-    for(let tab of tabList){
-        tab.onclick = function(){
+    for (let tab of tabList) {
+        tab.onclick = function () {
             resultsChart.setChartResultType(tab.innerHTML);
-            for(let tab2 of tabList){
+            for (let tab2 of tabList) {
                 tab2.className = tab2.className.replace(" active", "");
             }
             tab.className += " active";
         }
+    }
+
+    //clear data button handler
+    document.getElementById("clearData").onclick = function () {
+        resultsChart.deleteResults();
+        localDB.deleteResults();
     }
 
     document.getElementById("restart").onclick = currentGame.resetGame.bind(currentGame);
