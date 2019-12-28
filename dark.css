@@ -86,8 +86,34 @@ button:hover{
     width: 19%;
 }
 
+/* TABS */
+.tabContainer{
+    overflow: hidden;
+    margin: 0px 10px 0px 10px;
+    clear: right;
+}
+
+#clearData{
+    width: 180px;
+    float: right;
+    background-color: rgb(231, 82, 68);
+}
+
+#clearData:hover{
+    background-color: rgb(170, 54, 43);
+}
+
+.tabContainer .tab{
+    background-color: #44454A;
+}
+
+.tabContainer .tab.active{
+    background-color: #7851A9;
+}
+
 /* CHART */
 .chartContainer{
+    margin: 0px 10px 0px 10px;
     padding: 20px 20px 20px 20px;
     background-color: #44454A;
 }

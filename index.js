@@ -438,12 +438,12 @@ class ResultsChart {
         this.lineChart = new Chart(chartCanvas, {
             type: 'line',
             data: {
-                labels: [], // TODO - x-axis
+                labels: [], 
                 datasets: [{
                     label: "Results",
                     backgroundColor: "#7851A9",
                     borderColor: '#583189',
-                    data: [], // TODO - y-axis
+                    data: [],
                 }]
             },
             options: {
@@ -464,6 +464,11 @@ class ResultsChart {
                         }
                     }],
                     yAxes: [{
+                        // scaleLabel:{
+                        //     labelString: "Max Combo",
+                        //     display: true,
+                        //     fontColor: "white",
+                        // },
                         ticks: {
                             fontColor: "white",
                         },
@@ -477,7 +482,23 @@ class ResultsChart {
     }
 
     setChartResultType(resultType){
-        this.chartResultType = resultType;
+        console.log("Switching Results");
+        switch(resultType){
+            case "Max Combo":
+                this.chartResultType="maxCombo";
+                break;
+            case "CPM":
+                this.chartResultType="charactersPerMin";
+                break;
+            case "WPM":
+                this.chartResultType="wordsPerMin";
+                break;
+            case "Accuracy":
+                this.chartResultType="accuracy";
+                break;
+            default:
+                this.chartResultType="maxCombo";
+        }
         this.updateChart();
     }
 
@@ -560,6 +581,18 @@ function init() {
         this.placeX = window.innerWidth / 5;
         this.drawWords();
     }.bind(currentGame));
+
+    //tab button handler
+    let tabList = document.getElementsByClassName("tab");
+    for(let tab of tabList){
+        tab.onclick = function(){
+            resultsChart.setChartResultType(tab.innerHTML);
+            for(let tab2 of tabList){
+                tab2.className = tab2.className.replace(" active", "");
+            }
+            tab.className += " active";
+        }
+    }
 
     document.getElementById("restart").onclick = currentGame.resetGame.bind(currentGame);
 }
