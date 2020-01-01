@@ -12,7 +12,7 @@ canvas.width = window.innerWidth;
 
 
 const wordCount = 180;
-const apiKey = "NNYGYXAE";
+const apiKey = "WQMMC801";
 const http = new XMLHttpRequest();
 const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
@@ -146,24 +146,24 @@ class WordTaiko {
 
     // TODO - change API
     getWords() {
-        // let wordList;
-        // http.onreadystatechange = function (event) {
-        //     if (http.readyState == 4 && http.status == 200) {
-        //         // get response and parse
-        //         wordList = JSON.parse(http.responseText);
-        //         this.wordsSpaced = wordList.join(" ");
-        //         //draw words once done
-        //         this.drawWords();
-        //         //allow input once words obtained
-        //         document.addEventListener("keydown", this.bindedCheckKey);
-        //     }
-        // }.bind(this);
-        // http.open("GET", url);
-        // http.send();
+        let wordList;
+        http.onreadystatechange = function (event) {
+            if (http.readyState == 4 && http.status == 200) {
+                // get response and parse
+                wordList = JSON.parse(http.responseText);
+                this.wordsSpaced = wordList.join(" ");
+                //draw words once done
+                this.drawWords();
+                //allow input once words obtained
+                document.addEventListener("keydown", this.bindedCheckKey);
+            }
+        }.bind(this);
+        http.open("GET", url);
+        http.send();
 
-        this.wordsSpaced = "bruh lol k dude";
-        this.drawWords();
-        document.addEventListener("keydown", this.bindedCheckKey);
+        // this.wordsSpaced = "bruh lol k dude";
+        // this.drawWords();
+        // document.addEventListener("keydown", this.bindedCheckKey);
     }
 
     startGame() {
@@ -463,9 +463,14 @@ class ResultsChart {
                 labels: [],
                 datasets: [{
                     label: "Results",
-                    backgroundColor: "#7851A9",
-                    borderColor: '#583189',
+                    backgroundColor: "#583189",
+                    borderColor: '#7851A9',
                     data: [],
+                    pointRadius: 5,
+                    pointBorderWidth: 2,
+                    pointHitRadius: 10,
+                    pointHoverRadius: 7,
+                    pointHoverBorderWidth: 3,
                 }]
             },
             options: {
@@ -610,6 +615,7 @@ function init() {
     }.bind(currentGame));
 
     //tab button handler
+    // TODO - no highlight/focus
     let tabList = document.getElementsByClassName("tab");
     for (let tab of tabList) {
         tab.onclick = function () {
