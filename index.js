@@ -12,9 +12,8 @@ canvas.width = window.innerWidth;
 
 
 const wordCount = 180;
-const apiKey = "WQMMC801";
 const http = new XMLHttpRequest();
-const url = "https://random-word-api.herokuapp.com/word?key=" + apiKey + "&number=" + wordCount;
+const url = "https://random-word-api.herokuapp.com/word?number=" + wordCount;
 const keyHitAudio = new Audio("audio/KeyHit.wav");
 
 class WordTaiko {
@@ -429,7 +428,7 @@ class ResultsDatabase {
         //open a read/write db transaction
         let transaction = this.db.transaction(["results_os"], 'readwrite');
 
-        transaction.onerror = function() {
+        transaction.onerror = function () {
             console.log("Database transaction failed");
         };
 
@@ -439,7 +438,7 @@ class ResultsDatabase {
         //clear object store
         let request = objectStore.clear();
 
-        request.onsuccess = function(){
+        request.onsuccess = function () {
             console.log("Data Cleared");
         }
     }
@@ -535,7 +534,7 @@ class ResultsChart {
         this.updateChart();
     }
 
-    deleteResults(){
+    deleteResults() {
         this.results = [];
         this.updateChart();
     }
