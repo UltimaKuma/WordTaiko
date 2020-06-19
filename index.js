@@ -341,7 +341,7 @@ class ResultsDatabase {
             let request = window.indexedDB.open('results_db', 1);
 
             request.onerror = function () {
-                console.log("Database failed to open");
+                console.error("Database failed to open");
             };
 
             request.onsuccess = function () {
@@ -371,7 +371,7 @@ class ResultsDatabase {
     }
 
     addResult(result) {
-        console.log("Adding result to database");
+        console.log("Adding result " + result.timestamp + " to database");
 
         //open a read/write db transaction
         let transaction = this.db.transaction(["results_os"], 'readwrite');
@@ -390,7 +390,7 @@ class ResultsDatabase {
         };
 
         transaction.onerror = function () {
-            console.log("Database transaction failed");
+            console.error("Database transaction failed");
         };
     }
 
@@ -411,12 +411,10 @@ class ResultsDatabase {
                 };
 
                 results.push(result);
-                console.log("Iterating")
                 cursor.continue();
             } else {
                 //final iteration
                 console.log("All results obtained");
-                console.log(results);
                 resultsChart.setResults(results);
             }
         };
@@ -429,7 +427,7 @@ class ResultsDatabase {
         let transaction = this.db.transaction(["results_os"], 'readwrite');
 
         transaction.onerror = function () {
-            console.log("Database transaction failed");
+            console.error("Database transaction failed");
         };
 
         //call object store
@@ -508,7 +506,6 @@ class ResultsChart {
     }
 
     setChartResultType(resultType) {
-        console.log("Switching Results");
         switch (resultType) {
             case "Max Combo":
                 this.chartResultType = "maxCombo";
@@ -529,7 +526,6 @@ class ResultsChart {
     }
 
     setResults(results) {
-        console.log("Setting results");
         this.results = results;
         this.updateChart();
     }
@@ -547,7 +543,6 @@ class ResultsChart {
     }
 
     updateChart() {
-        console.log("Updating chart");
         this.lineChart.data.datasets[0].label = this.chartResultType;
         this.lineChart.data.labels = [];
         this.lineChart.data.datasets[0].data = [];
@@ -555,7 +550,6 @@ class ResultsChart {
             this.lineChart.data.labels.push(this.results[i].timestamp);
             this.lineChart.data.datasets[0].data.push(this.results[i][this.chartResultType]);
         }
-        console.log(this.lineChart);
         this.lineChart.update();
     }
 
